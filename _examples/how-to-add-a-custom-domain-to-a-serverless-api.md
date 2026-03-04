@@ -53,7 +53,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -65,7 +65,7 @@ Let's start by setting up an API
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack, app }: StackContext) {
@@ -86,7 +86,7 @@ export function ExampleStack({ stack, app }: StackContext) {
 }
 ```
 
-We are creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding a route to it.
+We are creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding a route to it.
 
 ```
 GET /
@@ -94,11 +94,11 @@ GET /
 
 We are also configuring a custom domain for the API endpoint.
 
-```ts
+```typescript
 customDomain: `${stage}.example.com`;
 ```
 
-Our custom domain is based on the stage we are deploying to. So for `dev` it'll be `dev.example.com`. To do this, we are [accessing the properties of the app from the stack]({{ site.docs_url }}/constructs/Stack#accessing-app-properties).
+Our custom domain is based on the stage we are deploying to. So for `dev` it'll be `dev.example.com`. To do this, we are [accessing the properties of the app from the stack]({{ site.v2_url }}/constructs/Stack#accessing-app-properties).
 
 ## Custom domains in Route 53
 
@@ -108,7 +108,7 @@ Or if you have a domain hosted on another provider, [read this to migrate it to 
 
 If you already have a domain in Route 53, SST will look for a [hosted zone](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html) with the name set to the base domain. So for example, if your custom domain is set to `dev.example.com`, SST will look for a hosted zone called `example.com`. If you have it set under a different hosted zone, you'll need to set that explicitly.
 
-```ts
+```typescript
 const api = new Api(stack, "Api", {
   customDomain: {
     domainName: "dev.api.example.com",
@@ -124,7 +124,7 @@ For this example, we are going to focus on the custom domain. So we are going to
 
 {%change%} Replace the `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 export async function main() {
   const response = {
     userId: 1,
@@ -146,7 +146,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -205,7 +205,7 @@ Let's make a quick change to our API. It would be good if the JSON strings are p
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 export async function main() {
   const response = {
     userId: 1,

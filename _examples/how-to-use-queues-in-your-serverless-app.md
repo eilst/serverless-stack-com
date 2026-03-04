@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ An SST app is made up of two parts.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { StackContext, Queue, Api } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -75,7 +75,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates an SQS queue using [`Queue`]({{ site.docs_url }}/constructs/Queue). And it has a consumer that polls for messages from the queue. The consumer function will run when it has polled 1 or more messages.
+This creates an SQS queue using [`Queue`]({{ site.v2_url }}/constructs/Queue). And it has a consumer that polls for messages from the queue. The consumer function will run when it has polled 1 or more messages.
 
 ## Setting up the API
 
@@ -83,7 +83,7 @@ Now let's add the API.
 
 {%change%} Add this below the `Queue` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create the HTTP API
 const api = new Api(stack, "Api", {
   defaults: {
@@ -103,7 +103,7 @@ stack.addOutputs({
 });
 ```
 
-Our [API]({{ site.docs_url }}/constructs/api) simply has one endpoint (the root). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/lambda.ts` will get invoked.
+Our [API]({{ site.v2_url }}/constructs/api) simply has one endpoint (the root). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/lambda.ts` will get invoked.
 
 We'll also bind our queue to our API.
 
@@ -113,7 +113,7 @@ We will create two functions, one for handling the API request, and one for the 
 
 {%change%} Replace the `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 export async function main() {
   console.log("Message queued!");
   return {
@@ -125,7 +125,7 @@ export async function main() {
 
 {%change%} Add a `packages/functions/src/consumer.ts`.
 
-```ts
+```typescript
 import { SQSEvent } from "aws-lambda";
 
 export async function main(event: SQSEvent) {
@@ -140,7 +140,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -170,7 +170,7 @@ Now let's send a message to our queue.
 
 {%change%} Replace the `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
 

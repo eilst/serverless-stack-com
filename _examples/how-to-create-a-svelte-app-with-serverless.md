@@ -13,7 +13,7 @@ ref: how-to-create-a-svelte-app-with-serverless
 comments_id: how-to-create-a-svelte-app-with-serverless/2522
 ---
 
-In this example we will look at how to create and deploy [SvelteKit](https://kit.svelte.dev) to AWS with SST. We'll be using the [`SvelteKitSite`]({{ site.docs_url }}/constructs/SvelteKitSite) construct.
+In this example we will look at how to create and deploy [SvelteKit](https://kit.svelte.dev) to AWS with SST. We'll be using the [`SvelteKitSite`]({{ site.v2_url }}/constructs/SvelteKitSite) construct.
 
 ## Requirements
 
@@ -40,7 +40,7 @@ $ npm install
 
 This will detect that you are trying to configure a Svelte app. It'll add a `sst.config.ts` and a couple of packages to your `package.json`.
 
-```ts
+```typescript
 import type { SSTConfig } from "sst";
 import { Cron, Bucket, SvelteKitSite } from "sst/constructs";
 
@@ -63,7 +63,7 @@ export default {
 } satisfies SSTConfig;
 ```
 
-The `stacks` code describes the infrastructure of your serverless app. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}).
+The `stacks` code describes the infrastructure of your serverless app. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}).
 
 You are **ready to deploy** your Svelte app at this point! But for the purpose of this example, we'll go a bit further and add a file uploads feature to our app.
 
@@ -75,7 +75,7 @@ You are **ready to deploy** your Svelte app at this point! But for the purpose o
 $ npx sst dev
 ```
 
-SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live. This will ask you to start your Svelte dev environment as well.
+SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live. This will ask you to start your Svelte dev environment as well.
 
 {%change%} Start Svelte locally in a separate terminal.
 
@@ -93,11 +93,11 @@ To support file uploads in our app, we need an S3 bucket. Let's add that.
 
 {%change%} Add the following above our `SvelteKitSite` definition in the `sst.config.ts`.
 
-```ts
+```typescript
 const bucket = new Bucket(stack, "public");
 ```
 
-Here we are using the [`Bucket`]({{ site.docs_url }}/constructs/Bucket) construct to create an S3 bucket.
+Here we are using the [`Bucket`]({{ site.v2_url }}/constructs/Bucket) construct to create an S3 bucket.
 
 {%change%} Add it to the imports.
 
@@ -129,7 +129,7 @@ Now to let our users upload files in our Svelte app we need to start by generati
 
 {%change%} Create a `src/routes/+page.server.ts` with this.
 
-```ts
+```typescript
 export const load = (async () => {
   const command = new PutObjectCommand({
     ACL: "public-read",
@@ -142,7 +142,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 ```
 
-This generates a presigned URL when our app loads. Note how we can access our S3 bucket in a typesafe way — `Bucket.public.bucketName`. [You can learn more about Resource Binding over on our docs]({{ site.docs_url }}/resource-binding).
+This generates a presigned URL when our app loads. Note how we can access our S3 bucket in a typesafe way — `Bucket.public.bucketName`. [You can learn more about Resource Binding over on our docs]({{ site.v2_url }}/resource-binding).
 
 {%change%} We need to install a couple of packages.
 
@@ -152,7 +152,7 @@ $ npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 
 {%change%} And add these to the imports.
 
-```ts
+```typescript
 import crypto from "crypto";
 import { Bucket } from "sst/node/bucket";
 import type { PageServerLoad } from "./$types";
@@ -177,7 +177,7 @@ Now let's add the form.
 
 {%change%} And add the upload handler as `<script lang="ts">`.
 
-```ts
+```typescript
 import type { PageData } from "./$types";
 
 export let data: PageData;
@@ -203,7 +203,7 @@ We also need to disable prerendering since we want to generate the presigned URL
 
 {%change%} Replace `src/routes/+page.ts` with.
 
-```ts
+```typescript
 // since there is data here, we can't prerender
 export const prerender = false;
 ```
@@ -232,7 +232,7 @@ If you head over to the `URL` in your browser, you should see your new Svelte ap
 
 ![Deployed SvelteKit app with SST](/assets/examples/svelte-app/deployed-sveltekit-app-with-sst.png)
 
-We can [add a custom domain]({{ site.docs_url }}/custom-domains) to our app but we'll leave that as an exercise for later.
+We can [add a custom domain]({{ site.v2_url }}/custom-domains) to our app but we'll leave that as an exercise for later.
 
 ### Cleaning up
 

@@ -53,7 +53,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -65,7 +65,7 @@ Let's start by setting up an API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { StackContext, Api, Cognito } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -90,7 +90,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-We are creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding two routes to it.
+We are creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding two routes to it.
 
 ```
 GET /private
@@ -105,7 +105,7 @@ Now let's add authentication for our serverless app.
 
 {%change%} Add this below the `Api` definition in `stacks/ExampleStack.ts`. Make sure to replace the `domain` and `clientId` with that of your Auth0 app.
 
-```ts
+```typescript
 // Create auth provider
 const auth = new Cognito(stack, "Auth", {
   identityPoolFederation: {
@@ -120,11 +120,11 @@ const auth = new Cognito(stack, "Auth", {
 auth.attachPermissionsForAuthUsers(stack, [api]);
 ```
 
-This creates a [Cognito Identity Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) which relies on Auth0 to authenticate users. And we use the [`attachPermissionsForAuthUsers`]({{ site.docs_url }}/constructs/Auth#attachpermissionsforauthusers) method to allow our logged in users to access our API.
+This creates a [Cognito Identity Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) which relies on Auth0 to authenticate users. And we use the [`attachPermissionsForAuthUsers`]({{ site.v2_url }}/constructs/Auth#attachpermissionsforauthusers) method to allow our logged in users to access our API.
 
 {%change%} Replace the `stack.addOutputs` call with the following.
 
-```ts
+```typescript
 stack.addOutputs({
   ApiEndpoint: api.url,
   IdentityPoolId: auth.cognitoIdentityPoolId,
@@ -139,7 +139,7 @@ Let's create two functions, one handling the public route, and the other for the
 
 {%change%} Add a `packages/functions/src/public.ts`.
 
-```ts
+```typescript
 export async function main() {
   return {
     statusCode: 200,
@@ -150,7 +150,7 @@ export async function main() {
 
 {%change%} Add a `packages/functions/src/private.ts`.
 
-```ts
+```typescript
 export async function main() {
   return {
     statusCode: 200,
@@ -163,7 +163,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -317,7 +317,7 @@ Let's make a quick change to our private route and print out the caller's user i
 
 {%change%} Replace `packages/functions/src/private.ts` with the following.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const main: APIGatewayProxyHandlerV2 = async (event) => {

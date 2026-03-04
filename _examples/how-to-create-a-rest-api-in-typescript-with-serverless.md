@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ Let's start by setting up the routes for our API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { api, stackcontext } from "sst/constructs";
 
 export function examplestack({ stack }: stackcontext) {
@@ -84,7 +84,7 @@ export function examplestack({ stack }: stackcontext) {
 }
 ```
 
-we are creating an api here using the [`api`]({{ site.docs_url }}/constructs/api) construct. and we are adding three routes to it.
+we are creating an api here using the [`api`]({{ site.v2_url }}/constructs/api) construct. and we are adding three routes to it.
 
 ```
 GET /notes
@@ -100,7 +100,7 @@ For this example, we are not using a database. We'll look at that in detail in a
 
 {%change%} Let's add a file that contains our notes in `src/notes.ts`.
 
-```ts
+```typescript
 interface Note {
   noteId: string;
   userId: string;
@@ -132,7 +132,7 @@ Now add the code for our first endpoint.
 
 {%change%} Add a `src/list.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyResult } from "aws-lambda";
 import notes from "./notes";
 
@@ -152,7 +152,7 @@ Note that this function need to be `async` to be invoked by AWS Lambda. Even tho
 
 {%change%} Add the following to `src/get.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import notes from "./notes";
 
@@ -181,7 +181,7 @@ Here we are checking if we have the requested note. If we do, we respond with it
 
 {%change%} Add the following to `src/update.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import notes from "./notes";
 
@@ -218,7 +218,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -248,11 +248,11 @@ Stack dev-rest-api-ts-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **API** explorer and click the **Send** button of the `GET /notes` route to get a list of notes.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, the [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 ![API tab get notes response](/assets/examples/rest-api/api-tab-get-notes-response.png)
 
@@ -280,7 +280,7 @@ Let's make a quick change to our API. It would be good if the JSON strings are p
 
 {%change%} Replace `src/list.ts` with the following.
 
-```ts
+```typescript
 import { APIGatewayProxyResult } from "aws-lambda";
 import notes from "./notes";
 

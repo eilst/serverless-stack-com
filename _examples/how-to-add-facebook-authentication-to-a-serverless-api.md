@@ -53,7 +53,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -65,7 +65,7 @@ Let's start by setting up an API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, Cognito, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -90,7 +90,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-We are creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding two routes to it.
+We are creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding two routes to it.
 
 ```
 GET /private
@@ -105,7 +105,7 @@ Now let's add authentication for our serverless app.
 
 {%change%} Add this below the `Api` definition in `stacks/ExampleStack.ts`. Make sure to replace the `appId` with that of your Facebook app.
 
-```ts
+```typescript
 // Create auth provider
 const auth = new Cognito(stack, "Auth", {
   identityPoolFederation: {
@@ -117,11 +117,11 @@ const auth = new Cognito(stack, "Auth", {
 auth.attachPermissionsForAuthUsers(stack, [api]);
 ```
 
-This creates a [Cognito Identity Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) which relies on Facebook to authenticate users. And we use the [`attachPermissionsForAuthUsers`]({{ site.docs_url }}/constructs/Auth#attachpermissionsforauthusers) method to allow our logged in users to access our API.
+This creates a [Cognito Identity Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) which relies on Facebook to authenticate users. And we use the [`attachPermissionsForAuthUsers`]({{ site.v2_url }}/constructs/Auth#attachpermissionsforauthusers) method to allow our logged in users to access our API.
 
 {%change%} Replace the `stack.addOutputs` call with the following.
 
-```ts
+```typescript
 stack.addOutputs({
   ApiEndpoint: api.url,
   IdentityPoolId: auth.cognitoIdentityPoolId,
@@ -136,7 +136,7 @@ Let's create two functions, one handling the public route, and the other for the
 
 {%change%} Add a `packages/functions/src/public.ts`.
 
-```ts
+```typescript
 export async function main() {
   return {
     statusCode: 200,
@@ -147,7 +147,7 @@ export async function main() {
 
 {%change%} Add a `packages/functions/src/private.ts`.
 
-```ts
+```typescript
 export async function main() {
   return {
     statusCode: 200,
@@ -160,7 +160,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -251,7 +251,7 @@ You should get a set of temporary IAM credentials.
   "IdentityId": "us-east-1:46625265-9c97-420f-a826-15dbc812a008",
   "Credentials": {
     "AccessKeyId": "ASIARUIS6Q2MOT2D7LGE",
-    "SecretKey": "r9xMZBe7KXqKYUTBPuGR8jziNrkD8XpL5g2r9Pgw",
+    "SecretKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "SessionToken": "IQoJb3JpZ2luX2VjEHYaCXVzLWVhc3QtMSJHMEUCIA/0ccZZvhjSPnoXkzJ/TUiSPXB2ON/1Qnn2/omfQOQLAiEA+qjuBHYwZvHG8Q9cfjd/0yloUkh5pkEUzEiCjjaa5FYq6QMIbhACGgwxMTIyNDU3Njk4ODAiDGDpiBCuNOBhkktiHyrGA7A8scWUjxzwUKaEAzYdWOwxDdYxA21wPc3Bz2NSJlscwHQP0AjmZ3aPmEREgwhi92/5SGETFINbJSRDs9dsJ+hrArHpSyoOp6UmXX/48q8b9BbWKB2qeF/kIPMG+1urwgTLn7I9cmYNH0LUHLJ0/EaRVxFo/hUTnTiPsDZCD9X96WxvO+cfjhmpAdCTR8MjxUl4k18grIWzPBkNAJwS1D+zIuoQTQPiIN6e25pWi3Mi+wXxgz+ToBFiPeybl3Q9qHOH0gQipss5eYrMFYaRWS3k6eOLCZoTOA4T/sMoJMweGwT2V33C1/o95W0LXCwYuAWg9bdUC71DHtc9bPY1NCAWqQcnxQabziZkOFTW5aLeDsY53TDPFoYiQ8lUrmDLhZSU3MsBcXVtPsvI5MPmoIqyf62ccd8VJo7idS5yyobZz9Ku7/jG/ZmU5S0jdpjWIVqBGNd5aG4R6Vf41FqMN0bEcz2qQBRFTeRg+UDQTv6Hc0kM943iXXBNdzVptivlkEV/fN5NN8sC5zXOafWUMJ8raQhPOAvWTVPIo8aXfAlKzcAqA/8bzJOzeEADcW71XGABOSzhy5TQayqWVrIX8ksBWMmFcSMwqJSDgQY6hAINr+bYzf+Vp1knGBWE52ArJAWzcss9UQU+b0kXripIvFpbdSCn3Yz4+kHKmmgvLKCEGo2k+zJW8TP+j+f3PsQinCB1VHpLpL2G+rx4aK/wMZ48ALY/rIK8KcYArnmjga5IT/PC/4cRW0z1vCucGQibKZ5skF0tUnpLb3BNwGP42NrtoaFkHPmihRpvvpS93iHX8HavIkpEzNcgkKzCcL3tdWXlnN9Hx/CI1kpb4ubzYaAQYiuURYKrFySzkaAJAvSkCO0ZjG342YHe9V+WEC/VBDRJllSiPBAnWaWrDsymafAKUA3HylrvKAetXaK8sSwGQ3DfkJ6GedJTel3FDN8jzZOo9A==",
     "Expiration": "2021-02-08T01:20:40-05:00"
   }
@@ -282,7 +282,7 @@ Let's make a quick change to our private route and print out the caller's user i
 
 {%change%} Replace `packages/functions/src/private.ts` with the following.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const main: APIGatewayProxyHandlerV2 = async (event) => {

@@ -17,77 +17,59 @@ Recall that we've been hard coding our user ids so far (with user id `123`). We'
 
 Recall the function signature of a Lambda function:
 
-```js
-export async function main(event, context) {}
+```ts
+export async function main(event: APIGatewayProxyEvent, context: Context) {}
 ```
 
 Or the refactored version that we are using:
 
-```js
-export const main = handler(async (event) => {});
+```ts
+export const main = Util.handler(async (event) => {});
 ```
 
 So far we've used the `event` object to get the path parameters (`event.pathParameters`) and request body (`event.body`).
 
 Now we'll get the id of the authenticated user.
 
-```js
-event.requestContext.authorizer.iam.cognitoIdentity.identityId;
+```ts
+event.requestContext.authorizer?.iam.cognitoIdentity.identityId;
 ```
 
 This is an id that's assigned to our user by our Cognito Identity Pool.
 
 You'll also recall that so far all of our APIs are hard coded to interact with a single user.
 
-```js
+```ts
 userId: "123", // The id of the author
 ```
 
 Let's change that.
 
-{%change%} Replace the above line in `packages/functions/src/create.js` with.
+{%change%} Replace the above line in `packages/functions/src/create.ts` with.
 
-```js
-userId: event.requestContext.authorizer.iam.cognitoIdentity.identityId,
+```ts
+userId: event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
 ```
 
-{%change%} Do the same in the `packages/functions/src/get.js`.
+{%change%} Do the same in these files:
 
-```js
-userId: event.requestContext.authorizer.iam.cognitoIdentity.identityId,
-```
+- `packages/functions/src/get.ts`
+- `packages/functions/src/update.ts`
+- `packages/functions/src/delete.ts`
 
-{%change%} And in the `packages/functions/src/update.js`.
+{%change%} In `packages/functions/src/list.ts` find this line instead.
 
-```js
-userId: event.requestContext.authorizer.iam.cognitoIdentity.identityId,
-```
-
-{%change%} In `packages/functions/src/delete.js` as well.
-
-```js
-userId: event.requestContext.authorizer.iam.cognitoIdentity.identityId,
-```
-
-{%change%} In `packages/functions/src/list.js` find this line instead.
-
-```js
+```ts
 ":userId": "123",
 ```
 
 {%change%} And replace it with.
 
-```js
-":userId": event.requestContext.authorizer.iam.cognitoIdentity.identityId,
+```ts
+":userId": event.requestContext.authorizer?.iam.cognitoIdentity.identityId,
 ```
 
-{%change%} Also, include `event` in the function arguments.
-
-```js
-export const main = handler(async (event) => {
-```
-
-Keep in mind that the `userId` above is the Federated Identity id (or Identity Pool user id). This is not the user id that is assigned in our User Pool. If you want to use the user's User Pool user Id instead, have a look at the [Mapping Cognito Identity Id and User Pool Id]({% link _chapters/mapping-cognito-identity-id-and-user-pool-id.md %}) chapter.
+Keep in mind that the `userId` above is the Federated Identity id (or Identity Pool user id). This is not the user id that is assigned in our User Pool. If you want to use the user's User Pool user Id instead, have a look at the [Mapping Cognito Identity Id and User Pool Id]({% link _archives/mapping-cognito-identity-id-and-user-pool-id.md %}){:target="_blank"} chapter.
 
 To test these changes we cannot use the `curl` command anymore. We'll need to generate a set of authentication headers to make our requests. Let's do that next.
 
@@ -99,22 +81,20 @@ To be able to hit our API endpoints securely, we need to follow these steps.
 
 1. Authenticate against our User Pool and acquire a user token.
 2. With the user token get temporary IAM credentials from our Identity Pool.
-3. Use the IAM credentials to sign our API request with [Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
+3. Use the IAM credentials to sign our API request with [Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html){:target="_blank"}.
 
-These steps can be a bit tricky to do by hand. So we created a simple tool called [AWS API Gateway Test CLI](https://github.com/AnomalyInnovations/aws-api-gateway-cli-test).
-
-You can run it using.
+These steps can be a bit tricky to do by hand. So we created a simple tool called [AWS API Gateway Test CLI](https://github.com/AnomalyInnovations/aws-api-gateway-cli-test){:target="_blank"}.
 
 ```bash
 $ npx aws-api-gateway-cli-test \
+--user-pool-id='<USER_POOL_ID>' \
+--app-client-id='<USER_POOL_CLIENT_ID>' \
+--cognito-region='<COGNITO_REGION>' \
+--identity-pool-id='<IDENTITY_POOL_ID>' \
+--invoke-url='<API_ENDPOINT>' \
+--api-gateway-region='<API_REGION>' \
 --username='admin@example.com' \
 --password='Passw0rd!' \
---user-pool-id='USER_POOL_ID' \
---app-client-id='USER_POOL_CLIENT_ID' \
---cognito-region='COGNITO_REGION' \
---identity-pool-id='IDENTITY_POOL_ID' \
---invoke-url='API_ENDPOINT' \
---api-gateway-region='API_REGION' \
 --path-template='/notes' \
 --method='POST' \
 --body='{"content":"hello world","attachment":"hello.jpg"}'
@@ -123,17 +103,19 @@ $ npx aws-api-gateway-cli-test \
 We need to pass in quite a bit of our info to complete the above steps.
 
 - Use the username and password of the user created above.
-- Replace `USER_POOL_ID`, `USER_POOL_CLIENT_ID`, `COGNITO_REGION`, and `IDENTITY_POOL_ID` with the `UserPoolId`, `UserPoolClientId`, `Region`, and `IdentityPoolId` from our [previous chapter]({% link _chapters/adding-auth-to-our-serverless-app.md %}).
-- Replace the `API_ENDPOINT` with the `ApiEndpoint` from our [API stack outputs]({% link _chapters/add-an-api-to-create-a-note.md %}).
+- Replace `USER_POOL_ID`, `USER_POOL_CLIENT_ID`, `COGNITO_REGION`, and `IDENTITY_POOL_ID` with the `UserPool`, `UserPoolClient`, `Region`, and `IdentityPool` from our [previous chapter]({% link _chapters/adding-auth-to-our-serverless-app.md %}).
+- Replace the `API_ENDPOINT` with the `Api` from back when we [created our API]({% link _chapters/create-a-hello-world-api.md %}).
 - And for the `API_REGION` you can use the same `Region` as we used above. Since our entire app is deployed to the same region.
 
 While this might look intimidating, just keep in mind that behind the scenes all we are doing is generating some security headers before making a basic HTTP request. We won't need to do this when we connect from our React.js app.
 
-If you are on Windows, use the command below. The space between each option is very important.
+{%info%}
+If you are on Windows, you can use the command below. The spaces between each option are very important.
 
 ```bash
-$ npx aws-api-gateway-cli-test --username admin@example.com --password Passw0rd! --user-pool-id USER_POOL_ID --app-client-id USER_POOL_CLIENT_ID --cognito-region COGNITO_REGION --identity-pool-id IDENTITY_POOL_ID --invoke-url API_ENDPOINT --api-gateway-region API_REGION --path-template /notes --method POST --body '{""content\":\"hello world\",\"attachment\":\"hello.jpg\"}'
+$ npx aws-api-gateway-cli-test --username admin@example.com --password Passw0rd! --user-pool-id <USER_POOL_ID> --app-client-id <USER_POOL_CLIENT_ID> --cognito-region <COGNITO_REGION> --identity-pool-id <IDENTITY_POOL_ID> --invoke-url <API_ENDPOINT> --api-gateway-region <API_REGION> --path-template /notes --method POST --body "{\"content\":\"hello world\",\"attachment\":\"hello.jpg\"}"
 ```
+{%endinfo%}
 
 If the command is successful, the response will look similar to this.
 
@@ -153,10 +135,6 @@ Making API request
   }
 }
 ```
-
-It'll have created a new note for our test user in the **DynamoDB** tab of the [SST Console]({{ site.old_console_url }}).
-
-![SST Console test user new note](/assets/part2/sst-console-test-user-new-note.png)
 
 ### Commit the Changes
 

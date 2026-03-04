@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ An SST app is made up of two parts.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, EventBus, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -85,7 +85,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates an EventBridge EventBus using [`EventBus`]({{ site.docs_url }}/constructs/EventBus) and it has two targets. Meaning when the event is published, both the functions will get run.
+This creates an EventBridge EventBus using [`EventBus`]({{ site.v2_url }}/constructs/EventBus) and it has two targets. Meaning when the event is published, both the functions will get run.
 
 ## Setting up the API
 
@@ -93,7 +93,7 @@ Now let's add the API.
 
 {%change%} Add this below the `EventBus` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create a HTTP API
 const api = new Api(stack, "Api", {
   defaults: {
@@ -112,7 +112,7 @@ stack.addOutputs({
 });
 ```
 
-Our [API]({{ site.docs_url }}/constructs/api) simply has one endpoint (`/order`). When we make a `POST` request to this endpoint the Lambda function called `handler` in `packages/functions/src/order.ts` will get invoked.
+Our [API]({{ site.v2_url }}/constructs/api) simply has one endpoint (`/order`). When we make a `POST` request to this endpoint the Lambda function called `handler` in `packages/functions/src/order.ts` will get invoked.
 
 We'll also bind our event bus to our API.
 
@@ -122,7 +122,7 @@ We will create three functions, one handling the `/order` API request, and two f
 
 {%change%} Add a `packages/functions/src/order.ts`.
 
-```ts
+```typescript
 export async function handler() {
   console.log("Order confirmed!");
   return {
@@ -134,7 +134,7 @@ export async function handler() {
 
 {%change%} Add a `packages/functions/src/receipt.ts`.
 
-```ts
+```typescript
 export async function handler() {
   console.log("Receipt sent!");
   return {};
@@ -143,7 +143,7 @@ export async function handler() {
 
 {%change%} Add a `packages/functions/src/shipping.ts`.
 
-```ts
+```typescript
 export async function handler() {
   console.log("Item shipped!");
   return {};
@@ -154,7 +154,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -184,7 +184,7 @@ Stack dev-eventbus-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **Functions** tab and click the **Invoke** button of the `POST /order` function to send a `POST` request.
 
@@ -202,7 +202,7 @@ Now let's publish a event to our EventBus.
 
 {%change%} Replace the `packages/functions/src/order.ts` with the following.
 
-```ts
+```typescript
 import AWS from "aws-sdk";
 import { EventBus } from "sst/node/event-bus";
 

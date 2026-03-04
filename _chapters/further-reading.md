@@ -10,26 +10,22 @@ comments_id: further-reading/209
 
 Once you've completed the guide, you are probably going to use SST for your next project. To help you along the way we try to compile a list of docs that you can use as a reference. The following can be used to drill down in detail for some of the technologies and services used in this guide.
 
-- [SST Documentation]({{ site.docs_url }}): Documentation for SST.
+- [SST Documentation]({{ site.sst_url }}/docs/): Documentation for SST
 
 - [DynamoDB, explained](https://www.dynamodbguide.com): A Primer on the DynamoDB NoSQL database
 
-- [React JS Docs](https://reactjs.org/docs/hello-world.html): The official React docs
+- [Learn React](https://react.dev/learn): The official React docs
 
-- [JSX In Depth](https://reactjs.org/docs/jsx-in-depth.html): Learn JSX in a bit more detail
+- [Vite docs](https://vitejs.dev/guide/): The official Vite docs
 
-- [Create React App User Guide](https://create-react-app.dev/docs/getting-started/): The really comprehensive Create React App user guide 
+- [React-Bootstrap Docs](https://react-bootstrap.github.io/docs/getting-started/introduction): The official React-Bootstrap docs
 
-- [React-Bootstrap Docs](https://react-bootstrap.github.io/getting-started/introduction): The official React-Bootstrap docs
-
-- [React Router Docs](https://reactrouter.com/web/guides/quick-start): The official React Router docs
+- [Learn React Router](https://reactrouter.com/en/6.15.0/start/tutorial): The official React Router docs
 
 - [AWS Amplify API Reference](https://aws.github.io/aws-amplify/api/): The AWS Amplify API reference
 
-- [Jest Unit Test Docs](https://jestjs.io/docs/getting-started): The official Jest docs
+- [Vitest Docs](https://vitest.dev/guide/): The official Vitest docs
 
-- [Seed Docs](https://seed.run/docs/): The official Seed docs
-
-- [Sentry React Docs](https://docs.sentry.io/platforms/javascript/guides/react/): The Sentry React guide
+- [SST Console Docs]({{ site.sst_url }}/docs/console/): The SST Console docs
 
 If you have found any other guides or tutorials helpful in building your serverless app, feel free to edit this page and submit a PR. Or you can let us know via the comments.

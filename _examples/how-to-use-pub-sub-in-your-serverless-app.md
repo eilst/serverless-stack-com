@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ An SST app is made up of two parts.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, StackContext, Topic } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -78,7 +78,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates an SNS topic using [`Topic`]({{ site.docs_url }}/constructs/Topic). And it has two subscribers. Meaning when the topic is published, both the functions will get run.
+This creates an SNS topic using [`Topic`]({{ site.v2_url }}/constructs/Topic). And it has two subscribers. Meaning when the topic is published, both the functions will get run.
 
 ## Setting up the API
 
@@ -86,7 +86,7 @@ Now let's add the API.
 
 {%change%} Add this below the `Topic` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create the HTTP API
 const api = new Api(stack, "Api", {
   defaults: {
@@ -106,7 +106,7 @@ stack.addOutputs({
 });
 ```
 
-Our [API]({{ site.docs_url }}/constructs/api) simply has one endpoint (`/order`). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/order.ts` will get invoked.
+Our [API]({{ site.v2_url }}/constructs/api) simply has one endpoint (`/order`). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/order.ts` will get invoked.
 
 We'll also bind our topic to our API.
 
@@ -116,7 +116,7 @@ We will create three functions, one handling the `/order` API request, and two f
 
 {%change%} Add a `packages/functions/src/order.ts`.
 
-```ts
+```typescript
 export async function main() {
   console.log("Order confirmed!");
   return {
@@ -128,7 +128,7 @@ export async function main() {
 
 {%change%} Add a `packages/functions/src/receipt.ts`.
 
-```ts
+```typescript
 import { SNSEvent } from "aws-lambda";
 
 export async function main(event: SNSEvent) {
@@ -141,7 +141,7 @@ export async function main(event: SNSEvent) {
 
 {%change%} Add a `packages/functions/src/shipping.ts`.
 
-```ts
+```typescript
 import { SNSEvent } from "aws-lambda";
 
 export async function main(event: SNSEvent) {
@@ -156,7 +156,7 @@ Now let's test our new API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -186,7 +186,7 @@ Now let's publish a message to our topic.
 
 {%change%} Replace the `packages/functions/src/order.ts` with the following.
 
-```ts
+```typescript
 import AWS from "aws-sdk";
 import { Topic } from "sst/node/topic";
 

@@ -3,55 +3,47 @@ layout: post
 title: Custom Domains in serverless APIs
 date: 2021-08-17 00:00:00
 lang: en
-description: In this chapter we are setting a custom domain for our serverless API on AWS. We are using the SST Api construct to configure the custom domain.
+description: In this chapter we are setting a custom domain for our serverless API on AWS. We are using the SST ApiGatewayV2 component to configure the custom domain.
 ref: custom-domains-in-serverless-apis
 comments_id: custom-domains-in-serverless-apis/2464
 ---
 
-In the [previous chapter]({% link _chapters/purchase-a-domain-with-route-53.md %}) we purchased a new domain on [Route 53](https://aws.amazon.com/route53/). Now let's use it for our serverless API.
+In the [previous chapter]({% link _chapters/purchase-a-domain-with-route-53.md %}) we purchased a new domain on [Route 53](https://aws.amazon.com/route53/){:target="_blank"}. Now let's use it for our serverless API.
 
-{%change%} In your `stacks/ApiStack.js` add the following above the `defaults: {` line.
+{%change%} In your `infra/api.ts` add this above the `transform: {` line.
 
-```js
-customDomain:
-  app.stage === "prod" ? "api.my-serverless-app.com" : undefined,
+```ts
+domain: $app.stage === "production" ? "<api.yourdomainhere.com>" : undefined,
 ```
+{%note%}
+Without specifying the API subdomain, the deployment will attempt to create duplicate A (IPv4) and AAAA (IPv6) DNS records and error.  
+{%endnote%}
 
-This tells SST that we want to use the custom domain `api.my-serverless-app.com` **if** we are deploying to the `prod` stage. We are not setting one for our `dev` stage, or any other stage.
+This tells SST that we want to use a custom domain **if** we are deploying to the `production` stage. We are not setting one for our `dev` stage, or any other stage.
 
 We could for example, base it on the stage name, `api-${app.stage}.my-serverless-app.com`. So for `dev` it might be `api-dev.my-serverless-app.com`. But we'll leave that as an exercise for you.
 
-We also need to update the outputs of our API stack.
-
-{%change%} Replace the `stack.addOutputs` call at the bottom of `stacks/ApiStack.js`.
-
-```js
-stack.addOutputs({
-  ApiEndpoint: api.customDomainUrl || api.url,
-});
-```
-
-Here we are returning the custom domain URL, if we have one. If not, then we return the auto-generated URL.
+The `$app` is a global variable that's available in our config. You can [learn more about it here]({{ site.sst_url }}/docs/reference/global/#app){:target="_blank"}.
 
 ### Deploy the App
 
-We are now going to deploy our app to prod. You can go ahead and stop the local development environments for SST and React.
+Let's deploy these changes to prod.
 
-{%change%} Run the following from your project root.
+{%change%} Run the following from **your project root**.
 
 ```bash
-$ npx sst deploy --stage prod
+$ npx sst deploy --stage production
 ```
 
-This command will take a few minutes as it'll deploy your app to a completely new environment. Recall that we are deploying to a separate prod environment because we don't want to affect our users while we are actively developing our app. This ensures that we have a separate local dev environment and a separate prod environment.
+{%note%}
+Deploying changes to custom domains can take a few minutes.
+{%endnote%}
 
 At the end of the deploy process you should see something like this.
 
 ```bash
-✓  Deployed:
-   StorageStack
-   ApiStack
-   ApiEndpoint: https://api.my-serverless-app.com
++  Complete
+   Api: https://api.my-serverless-app.com
    ...
 ```
 

@@ -15,7 +15,7 @@ comments_id: how-to-debug-lambda-functions-with-visual-studio-code/2388
 
 In this example we will look at how to debug AWS Lambda functions with [Visual Studio Code (VS Code)](https://code.visualstudio.com) using [SST]({{ site.sst_github_repo }}).
 
-SST allows you to build and test Lambda functions locally using [Live Lambda Development]({{ site.docs_url }}/live-lambda-development). This means that you can attach breakpoints and inspect your Lambda functions locally, even if they are invoked remotely.
+SST allows you to build and test Lambda functions locally using [Live Lambda Development]({{ site.v2_url }}/live-lambda-development). This means that you can attach breakpoints and inspect your Lambda functions locally, even if they are invoked remotely.
 
 Here is a video of it in action.
 
@@ -62,7 +62,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -74,7 +74,7 @@ For this example we'll be testing using a simple API endpoint.
 
 {%change%} Replace your `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -98,7 +98,7 @@ Our functions are stored in the `packages/functions/` directory. In this case, w
 
 {%change%} Create a `packages/functions/src/lambda.ts` with.
 
-```ts
+```typescript
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (
@@ -140,9 +140,9 @@ To allow VS Code to set breakpoints and debug our Lambda functions we'll add it 
 
 Since we are going to set breakpoints in our Lambda functions, it makes sense to increase the timeouts.
 
-SST has an [`--increase-timeout`]({{ site.docs_url }}/packages/sst#options) option that increases the function timeouts in your app to the maximum 15 minutes. We are using this option in our `launch.json`.
+SST has an [`--increase-timeout`]({{ site.v2_url }}/packages/sst#options) option that increases the function timeouts in your app to the maximum 15 minutes. We are using this option in our `launch.json`.
 
-```ts
+```typescript
 "runtimeArgs": ["start", "--increase-timeout"],
 ```
 
@@ -195,7 +195,7 @@ An advantage of using the Live Lambda Development environment is that you can ma
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (

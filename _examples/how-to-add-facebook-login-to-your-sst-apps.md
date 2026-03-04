@@ -13,7 +13,7 @@ ref: how-to-add-facebook-login-to-your-sst-app-with-sst-auth
 comments_id: how-to-add-facebook-login-to-your-sst-app-with-sst-auth/2643
 ---
 
-In this example, we will look at how to add Facebook Login to your serverless app using [SST Auth]({{ site.docs_url }}/auth).
+In this example, we will look at how to add Facebook Login to your serverless app using [SST Auth]({{ site.v2_url }}/auth).
 
 ## Requirements
 
@@ -52,7 +52,7 @@ An SST app is made up of three parts.
 
 1. `stacks/` — Infrastructure code
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — Application code
 
@@ -114,7 +114,7 @@ Make a note of the **App ID** and **App secret**. We will need them in the follo
 
 ## Store the secrets
 
-Since sensitive values should not be defined in the code, we are going to use [Config]({{ site.docs_url }}/config) to help us managing the Facebook app's credentials.
+Since sensitive values should not be defined in the code, we are going to use [Config]({{ site.v2_url }}/config) to help us managing the Facebook app's credentials.
 
 {%change%} Run in the root.
 
@@ -131,11 +131,11 @@ Next, we need to create an **Authorize URL** to initiate the auth flow.
 
 #### Configure the construct
 
-We are going to use the [`Auth`]({{ site.docs_url }}/constructs/Auth) construct. It will help us create both the **Authorize URL** and the **Callback URL**.
+We are going to use the [`Auth`]({{ site.v2_url }}/constructs/Auth) construct. It will help us create both the **Authorize URL** and the **Callback URL**.
 
 {%change%} Add the following below the `Api` construct in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 const auth = new Auth(stack, "auth", {
   authenticator: {
     handler: "packages/functions/src/auth.handler",
@@ -168,7 +168,7 @@ Now let's implement the `authenticator` function.
 
 {%change%} Add a file in `packages/functions/src/auth.ts` with the following.
 
-```ts
+```typescript
 import { Config } from "sst/node/config";
 import { AuthHandler, FacebookAdapter } from "sst/node/auth";
 
@@ -202,11 +202,11 @@ We are also using the `Config` module to load the Facebook app's credentials sto
 
 Next, we are going to add a **Sign in with Facebook** button to our frontend. And on click, we will redirect the user to the **Authorize URL**.
 
-To deploy a React app to AWS, we'll be using the SST [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) construct.
+To deploy a React app to AWS, we'll be using the SST [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) construct.
 
 {%change%} Add the following above the `Auth` construct in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 const site = new StaticSite(stack, "site", {
   path: "web",
   buildCommand: "npm run build",
@@ -228,7 +228,7 @@ const site = new StaticSite(stack, "site", {
 
 The construct is pointing to the directory where we are going to add our React.js app.
 
-We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
+We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
 
 {%change%} Also remember to import the `StaticSite` construct up top.
 
@@ -260,7 +260,7 @@ We also need to load the environment variables from our SST app. To do this, we'
 
 ## Start our dev environment
 
-SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 {%change%} Run in the root.
 
@@ -367,7 +367,7 @@ First, to make creating and retrieving session typesafe, we'll start by defining
 
 {%change%} Add the following above the `AuthHandler` in `packages/functions/src/auth.ts`.
 
-```ts
+```typescript
 declare module "sst/node/auth" {
   export interface SessionTypes {
     user: {
@@ -434,7 +434,7 @@ Then in the frontend, we will check if the URL contains the `token` query string
 
 {%change%} Add the following above the `return` in `web/src/App.jsx`.
 
-```ts
+```typescript
 useEffect(() => {
   const search = window.location.search;
   const params = new URLSearchParams(search);
@@ -452,7 +452,7 @@ On page load, we will also check if the session token exists in the local storag
 
 {%change%} Add this above the `useEffect` we just added.
 
-```ts
+```typescript
 const [session, setSession] = useState(null);
 
 const getSession = async () => {
@@ -498,7 +498,7 @@ And finally, when the user clicks on `Sign out`, we need to clear the session to
 
 {%change%} Add the following above the `return`.
 
-```ts
+```typescript
 const signOut = async () => {
   localStorage.removeItem("session");
   setSession(null);
@@ -507,7 +507,7 @@ const signOut = async () => {
 
 {%change%} Also, remember to add the imports up top.
 
-```ts
+```typescript
 import { useEffect, useState } from "react";
 ```
 
@@ -529,11 +529,11 @@ So far we haven't been storing the data Facebook's been returning through the **
 
 #### Create a DynamoDB table
 
-We'll be using the SST [`Table`]({{ site.docs_url }}/constructs/Table) construct.
+We'll be using the SST [`Table`]({{ site.v2_url }}/constructs/Table) construct.
 
 {%change%} Add the following above the `Api` construct in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 const table = new Table(stack, "users", {
   fields: {
     userId: "string",
@@ -608,7 +608,7 @@ This is saving the `claims` we get from Facebook in our DynamoDB table.
 
 {%change%} Also add these imports up top.
 
-```ts
+```typescript
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { Table } from "sst/node/table";
@@ -637,7 +637,7 @@ Now that the user data is stored in the database; let's create an API endpoint t
 
 {%change%} Add a file at `packages/functions/src/session.ts`.
 
-```ts
+```typescript
 import { Table } from "sst/node/table";
 import { ApiHandler } from "sst/node/api";
 import { useSession } from "sst/node/auth";
@@ -669,7 +669,7 @@ export const handler = ApiHandler(async () => {
 });
 ```
 
-The handler calls a [`useSession()`]({{ site.docs_url }}/clients/auth#usesession) hook to decode the session token and retrieve the user's `userID` from the session data. Note that, `useSession` can be called anywhere in your Lambda handler. This works because we are using the [`ApiHandler`]({{ site.docs_url }}/clients/api#apihandler) to wrap our Lambda function.
+The handler calls a [`useSession()`]({{ site.v2_url }}/clients/auth#usesession) hook to decode the session token and retrieve the user's `userID` from the session data. Note that, `useSession` can be called anywhere in your Lambda handler. This works because we are using the [`ApiHandler`]({{ site.v2_url }}/clients/api#apihandler) to wrap our Lambda function.
 
 We then fetch the user's data from our database table with `userID` being the key.
 
@@ -687,7 +687,7 @@ As we wait, let's update our frontend to make a request to the `/session` API to
 
 {%change%} Add the following above the `signOut` function in `web/src/App.jsx`.
 
-```ts
+```typescript
 const getUserInfo = async (session) => {
   try {
     const response = await fetch(
@@ -860,7 +860,7 @@ Note that when we are developing locally via `sst dev`, the `IS_LOCAL` environme
 
 {%change%} Also remember to import the `StaticSite` construct up top.
 
-```ts
+```typescript
 import { StaticSite } from "sst/node/site";
 ```
 

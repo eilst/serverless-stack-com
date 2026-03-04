@@ -59,7 +59,7 @@ An SST app is made up of a couple of parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -75,7 +75,7 @@ Let's add the API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { StackContext, Api } from "sst/constructs";
 
 export function ExampleStack({ stack, app }: StackContext) {
@@ -93,11 +93,11 @@ export function ExampleStack({ stack, app }: StackContext) {
 }
 ```
 
-We are using the SST [`Api`]({{ site.docs_url }}/constructs/Api) construct to create our API. It simply has one endpoint at the root. When we make a `GET` request to this endpoint the function called `handler` in `packages/functions/src/lambda.ts` will get invoked.
+We are using the SST [`Api`]({{ site.v2_url }}/constructs/Api) construct to create our API. It simply has one endpoint at the root. When we make a `GET` request to this endpoint the function called `handler` in `packages/functions/src/lambda.ts` will get invoked.
 
 {%change%} Your `packages/functions/src/lambda.ts` should look something like this.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
@@ -134,11 +134,11 @@ You can connect to Thundra in two ways,
 
 For this tutorial let's follow the second way.
 
-You can then set the layer for all the functions in your stack using the [`addDefaultFunctionLayers`]({{ site.docs_url }}/constructs/Stack#adddefaultfunctionlayers) and [`addDefaultFunctionEnv`]({{ site.docs_url }}/constructs/Stack#adddefaultfunctionenv). Note we only want to enable this when the function is deployed, and not when using [Live Lambda Dev]({{ site.docs_url }}/live-lambda-development).
+You can then set the layer for all the functions in your stack using the [`addDefaultFunctionLayers`]({{ site.v2_url }}/constructs/Stack#adddefaultfunctionlayers) and [`addDefaultFunctionEnv`]({{ site.v2_url }}/constructs/Stack#adddefaultfunctionenv). Note we only want to enable this when the function is deployed, and not when using [Live Lambda Dev]({{ site.v2_url }}/live-lambda-development).
 
 {%change%} Add the following above the `api` definiton line in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Configure thundra to only prod
 if (!app.local) {
   const thundraAWSAccountNo = 269863060030;
@@ -185,7 +185,7 @@ Stack prod-thundra-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Run the below command to start SST console in **prod** stage.
 
@@ -227,7 +227,7 @@ npm install --save-dev @thundra/esbuild-plugin
 
 Create a new file called `esbuild.js` inside `config` folder in root and add the below code.
 
-```ts
+```typescript
 // config/esbuild.js
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -246,7 +246,7 @@ And then in `stacks/ExampleStack.ts` add the below code under the `defaults` in 
 
 {%change%} Replace the following in `stacks/ExampleStack.ts`:
 
-```ts
+```typescript
 const api = new Api(stack, "Api", {
   routes: {
     "GET /": "packages/functions/src/lambda.handler",
@@ -256,7 +256,7 @@ const api = new Api(stack, "Api", {
 
 {%change%} With:
 
-```ts
+```typescript
 const api = new Api(stack, "Api", {
   defaults: {
     function: {

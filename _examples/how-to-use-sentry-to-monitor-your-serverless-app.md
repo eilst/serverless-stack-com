@@ -57,7 +57,7 @@ An SST app is made up of a couple of parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -73,7 +73,7 @@ Let's add the API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { LayerVersion } from "aws-cdk-lib/aws-lambda";
 import { Api, StackContext } from "sst/constructs";
 
@@ -92,11 +92,11 @@ export function ExampleStack({ stack, app }: StackContext) {
 }
 ```
 
-We are using the SST [`Api`]({{ site.docs_url }}/constructs/Api) construct to create our API. It simply has one endpoint at the root. When we make a `GET` request to this endpoint the function called `handler` in `packages/functions/src/lambda.ts` will get invoked.
+We are using the SST [`Api`]({{ site.v2_url }}/constructs/Api) construct to create our API. It simply has one endpoint at the root. When we make a `GET` request to this endpoint the function called `handler` in `packages/functions/src/lambda.ts` will get invoked.
 
 {%change%} Your `packages/functions/src/lambda.ts` should look something like this.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
@@ -130,11 +130,11 @@ Next, you'll need to add the Sentry Lambda layer in your app.
 
 ![Copy Sentry Lambda Layer ARN](/assets/examples/sentry/copy-sentry-lambda-layer-arn.png)
 
-You can then set the layer for all the functions in your stack using the [`addDefaultFunctionLayers`]({{ site.docs_url }}/constructs/Stack#adddefaultfunctionlayers) and [`addDefaultFunctionEnv`]({{ site.docs_url }}/constructs/Stack#adddefaultfunctionenv). Note we only want to enable this when the function is deployed, and not when using [Live Lambda Dev]({{ site.docs_url }}/live-lambda-development).
+You can then set the layer for all the functions in your stack using the [`addDefaultFunctionLayers`]({{ site.v2_url }}/constructs/Stack#adddefaultfunctionlayers) and [`addDefaultFunctionEnv`]({{ site.v2_url }}/constructs/Stack#adddefaultfunctionenv). Note we only want to enable this when the function is deployed, and not when using [Live Lambda Dev]({{ site.v2_url }}/live-lambda-development).
 
 {%change%} Add the following to the top of the `ExampleStack` function in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Configure Sentry
 if (!app.local) {
   const sentry = LayerVersion.fromLayerVersionArn(
@@ -162,8 +162,8 @@ Next, we'll instrument our Lambda functions by wrapping them with the Sentry han
 
 {%change%} Replace the code in `packages/functions/src/lambda.ts` with this.
 
-```ts
-import Sentry from "@sentry/serverless";
+```typescript
+import * as Sentry from "@sentry/serverless";
 
 export const handler = Sentry.AWSLambda.wrapHandler(async (event) => {
   return {
@@ -210,11 +210,11 @@ Stack dev-sentry-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **API** tab and click **Send** button to send a `GET` request.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, the [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 ![API explorer invocation response](/assets/examples/datadog/api-explorer-invocation-response.png)
 

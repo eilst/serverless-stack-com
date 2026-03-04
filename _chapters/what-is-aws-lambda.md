@@ -8,23 +8,26 @@ description: AWS Lambda is a serverless computing service provided by Amazon Web
 comments_id: what-is-aws-lambda/308
 ---
 
-[AWS Lambda](https://aws.amazon.com/lambda/) (or Lambda for short) is a serverless computing service provided by AWS. In this chapter we are going to be using Lambda to build our serverless application. And while we don't need to deal with the internals of how Lambda works, it's important to have a general idea of how your functions will be executed.
+[AWS Lambda](https://aws.amazon.com/lambda/){:target="_blank"} (or Lambda for short) is a serverless computing service provided by AWS. In this chapter we are going to be using Lambda to build our serverless application. And while we don't need to deal with the internals of how Lambda works, it's important to have a general idea of how your functions will be executed.
+
 
 ### Lambda Specs
 
 Let's start by quickly looking at the technical specifications of AWS Lambda. Lambda supports the following runtimes.
 
-- Node.js 18.x, 16.x, 14.x and 12.x
-- Java 11 and 8
-- Python 3.9, 3.8, 3.7 and 3.6
-- .NET 6, 3.1, 3.0 and 2.2
+- Node.js 18.x, 16.x, and 14.x
+- Java 17, 11 and 8
+- Python 3.11, 3.10, 3.9, 3.8, and 3.7
+- .NET 7 and 6
 - Go 1.x
-- Ruby 2.7
-- Rust
+- Ruby 3.2 and 2.7
+- [Rust](https://docs.aws.amazon.com/lambda/latest/dg/lambda-rust.html)
 
-Note that, [.NET Core 2.2 and 3.0 are supported through custom runtimes](https://aws.amazon.com/blogs/developer/announcing-amazon-lambda-runtimesupport/).
+{%info%}
+[.NET Core 2.2 and 3.0 are supported through custom runtimes](https://aws.amazon.com/blogs/developer/announcing-amazon-lambda-runtimesupport/){:target="_blank"}.
+{%endinfo%}
 
-[See AWS for latest information on available runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
+[Check out the AWS docs to learn more about the available runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html){:target="_blank"}.
 
 Each function runs inside a container with a 64-bit Amazon Linux AMI. And the execution environment has:
 
@@ -37,29 +40,40 @@ Each function runs inside a container with a 64-bit Amazon Linux AMI. And the ex
 
 You might notice that CPU is not mentioned as a part of the container specification. This is because you cannot control the CPU directly. As you increase the memory, the CPU is increased as well.
 
-The ephemeral disk space is available in the form of the `/tmp` directory. You can only use this space for temporary storage since subsequent invocations will not have access to this. We'll talk a bit more on the stateless nature of the Lambda functions below.
+The ephemeral disk space is available in the form of the `/tmp` directory. You can only use this space for temporary storage since subsequent invocations will not have access to this. We will talk a bit more on the stateless nature of the Lambda functions below.
 
 The execution duration means that your Lambda function can run for a maximum of 900 seconds or 15 minutes. This means that Lambda isn't meant for long running processes.
 
-The package size refers to all your code necessary to run your function. This includes any dependencies (`node_modules/` directory in case of Node.js) that your function might import. There is a limit of 250MB on the uncompressed package and a 50MB limit once it has been compressed. If you need more space, you can package your container as a Docker image which can be up to 10GB. We'll take a look at the packaging process below.
+The package size refers to all your code necessary to run your function. This includes any dependencies (`node_modules/` directory in case of Node.js) that your function might import. There is a limit of 250MB on the uncompressed package and a 50MB limit once it has been compressed. If you need more space, you can package your container as a Docker image which can be up to 10GB. We will take a look at the packaging process below.
 
 ### Lambda Function
 
-Finally here is what a Lambda function (a Node.js version) looks like.
+Finally here is what a Lambda function using Node.js looks like.
 
-![Anatomy of a Lambda Function image](/assets/anatomy-of-a-lambda-function.png)
+```js
+export const handler = async (event, context) => {
+  // Do work
 
-Here `myHandler` is the name of our Lambda function. The `event` object contains all the information about the event that triggered this Lambda. In the case of an HTTP request it'll be information about the specific HTTP request. The `context` object contains info about the runtime our Lambda function is executing in. After we do all the work inside our Lambda function, we simply call the `callback` function with the results (or the error) and AWS will respond to the HTTP request with it.
+  return {
+    statusCode: 200,
+    body: "Hello World!"
+  };
+};
+```
+
+Here `handler` is the name of our Lambda function. It's an `async` function. The `event` object contains all the information about the event that triggered this Lambda. In the case of an HTTP request it'll be information about the specific HTTP request. The `context` object contains info about the runtime our Lambda function is executing in.
+
+After we do all the work inside our Lambda function, we simply return. If this function is connected to an API Gateway, you can return the response HTTP status code and body.
 
 ### Packaging Functions
 
-Lambda functions need to be packaged and sent to AWS. This is usually a process of compressing the function and all its dependencies and uploading it to an S3 bucket. And letting AWS know that you want to use this package when a specific event takes place. To help us with this process we use the [SST]({{ site.sst_github_repo }}). We'll go over this in detail later on in this guide.
+Lambda functions need to be packaged and sent to AWS. This is usually a process of compressing the function and all its dependencies and uploading it to an S3 bucket. And letting AWS know that you want to use this package when a specific event takes place. To help us with this process we use the [SST]({{ site.sst_url }}). We will go over this in detail later on in this guide.
 
 ### Execution Model
 
 The container (and the resources used by it) that runs our function is managed completely by AWS. It is brought up when an event takes place and is turned off if it is not being used. If additional requests are made while the original event is being served, a new container is brought up to serve a request. This means that if we are undergoing a usage spike, the cloud provider simply creates multiple instances of the container with our function to serve those requests.
 
-This has some interesting implications. Firstly, our functions are effectively stateless. Secondly, each request (or event) is served by a single instance of a Lambda function. This means that you are not going to be handling concurrent requests in your code. AWS brings up a container whenever there is a new request. It does make some optimizations here. It will hang on to the container for a few minutes (5 - 15mins depending on the load) so it can respond to subsequent requests without a cold start.
+This has some interesting implications. Firstly, our functions are effectively stateless. Secondly, each request (or event) is served by a single instance of a Lambda function. This means that you are not going to be handling concurrent requests in your code. AWS brings up a container whenever there is a new request. It does make some optimizations here. It will hang on to the container for a few minutes (5 - 15 mins depending on the load) so it can respond to subsequent requests without a cold start.
 
 ### Stateless Functions
 
@@ -67,14 +81,17 @@ The above execution model makes Lambda functions effectively stateless. This mea
 
 However, as noted in the optimization above, AWS will hang on to an existing container for a few minutes and use that to respond to any requests. So for that container instance, the code around the Lambda function will only be invoked once. While the actual Lambda function will be invoked for each request.
 
-For example, the `createNewDbConnection` method below is called once per container instance and not every time the Lambda function is invoked. The `myHandler` function on the other hand is called on every invocation.
+For example, the `createNewDbConnection` method below is called once per container instance and not every time the Lambda function is invoked. The `handler` function on the other hand is called on every invocation.
 
 ```js
 var dbConnection = createNewDbConnection();
 
-exports.myHandler = function (event, context, callback) {
+export const handler = async (event, context) => {
   var result = dbConnection.makeQuery();
-  callback(null, result);
+  return {
+    statusCode: 200,
+    body: JSON.stringify(result)
+  };
 };
 ```
 
@@ -90,7 +107,7 @@ Note that while AWS might keep the container with your Lambda function around af
 
 Lambda comes with a very generous free tier and it is unlikely that you will go over this while working on this guide.
 
-The Lambda free tier includes 1M free requests per month and 400,000 GB-seconds of compute time per month. Past this, it costs $0.20 per 1 million requests and $0.00001667 for every GB-seconds. The GB-seconds is based on the memory consumption of the Lambda function. You can save up to 17% by purchasing AWS Compute Savings Plans in exchange for a 1 or 3 year commitment. For further details check out the [Lambda pricing page](https://aws.amazon.com/lambda/pricing/).
+The Lambda free tier includes 1M free requests per month and 400,000 GB-seconds of compute time per month. Past this, it costs $0.20 per 1 million requests and $0.00001667 for every GB-seconds. The GB-seconds is based on the memory consumption of the Lambda function. You can save up to 17% by purchasing AWS Compute Savings Plans in exchange for a 1 or 3 year commitment. For further details check out the [Lambda pricing page](https://aws.amazon.com/lambda/pricing/){:target="_blank"}.
 
 In our experience, Lambda is usually the least expensive part of our infrastructure costs.
 

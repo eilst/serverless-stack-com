@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ An SST app is made up of two parts.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, StackContext, Table } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -79,7 +79,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates a serverless DynamoDB table using [`Table`]({{ site.docs_url }}/constructs/Table). Our table is going to look something like this:
+This creates a serverless DynamoDB table using [`Table`]({{ site.v2_url }}/constructs/Table). Our table is going to look something like this:
 
 | userId | noteId | content | createdAt |
 | ------ | ------ | ------- | --------- |
@@ -91,7 +91,7 @@ Now let's add the API.
 
 {%change%} Add this after the `Table` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create the HTTP API
 const api = new Api(stack, "Api", {
   defaults: {
@@ -115,7 +115,7 @@ stack.addOutputs({
 });
 ```
 
-We are creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding five routes to it.
+We are creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding five routes to it.
 
 ```
 GET /notes
@@ -135,7 +135,7 @@ Let's turn towards the functions that'll be powering our API. Starting with the 
 
 {%change%} Add the following to `packages/functions/src/create.ts`.
 
-```ts
+```typescript
 import * as uuid from "uuid";
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
@@ -181,7 +181,7 @@ Next, let's write the function that'll fetch all our notes.
 
 {%change%} Add the following to `packages/functions/src/list.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 
@@ -214,7 +214,7 @@ We'll do something similar for the function that gets a single note.
 
 {%change%} Create a `packages/functions/src/get.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { Table } from "sst/node/table";
@@ -248,7 +248,7 @@ Now let's update our notes.
 
 {%change%} Add a `packages/functions/src/update.ts` with:
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { Table } from "sst/node/table";
@@ -291,7 +291,7 @@ To complete the CRUD operations, let's delete the note.
 
 {%change%} Add this to `packages/functions/src/delete.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { Table } from "sst/node/table";
@@ -321,7 +321,7 @@ Now let's test what we've created so far.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -351,11 +351,11 @@ Stack dev-rest-api-dynamodb-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint using the integrated [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Let's create our first note, go to the **API** explorer and click on the `POST /notes` route.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, The [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 In the **Headers** tab enter `Content-type` in **Header 1** input and `application/json` in **Value 1** input. Go to the **Body** tab and paste the below json.
 
@@ -375,7 +375,7 @@ To retrieve the created note, go to `GET /notes/{id}` route and in the **URL** t
 
 Also let's go to the **DynamoDB** tab in the SST Console and check that the value has been created in the table.
 
-Note, The [DynamoDB explorer]({{ site.docs_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.docs_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
+Note, The [DynamoDB explorer]({{ site.v2_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.v2_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
 
 ![DynamoDB table view of table](/assets/examples/crud-rest-api-dynamodb/dynamo-table-view-of-table.png)
 
@@ -407,7 +407,7 @@ Let's make a quick change to test our Live Lambda Development environment. We wa
 
 {%change%} Replace the `return` statement in `packages/functions/src/gets.ts` with:
 
-```ts
+```typescript
 return results.Item
   ? {
       statusCode: 200,

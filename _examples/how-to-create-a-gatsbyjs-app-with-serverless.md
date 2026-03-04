@@ -13,7 +13,7 @@ ref: how-to-create-a-gatsby-app-with-serverless
 comments_id: how-to-create-a-gatsby-app-with-serverless/2595
 ---
 
-In this example we will look at how to use [Gatsby](https://www.gatsbyjs.com/) with a [serverless]({% link _chapters/what-is-serverless.md %}) API to create a simple click counter app. We'll be using the [SST]({{ site.sst_github_repo }}) and the SST [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite#creating-a-gatsby-site) construct to deploy our app to AWS.
+In this example we will look at how to use [Gatsby](https://www.gatsbyjs.com/) with a [serverless]({% link _chapters/what-is-serverless.md %}) API to create a simple click counter app. We'll be using the [SST]({{ site.sst_github_repo }}) and the SST [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite#creating-a-gatsby-site) construct to deploy our app to AWS.
 
 ## Requirements
 
@@ -52,7 +52,7 @@ An SST app is made up of a couple of parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -72,7 +72,7 @@ We'll be using [Amazon DynamoDB](https://aws.amazon.com/dynamodb/); a reliable a
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, StaticSite, StackContext, Table } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -86,7 +86,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates a serverless DynamoDB table using the SST [`Table`]({{ site.docs_url }}/constructs/Table) construct. It has a primary key called `counter`. Our table is going to look something like this:
+This creates a serverless DynamoDB table using the SST [`Table`]({{ site.v2_url }}/constructs/Table) construct. It has a primary key called `counter`. Our table is going to look something like this:
 
 | counter | tally |
 | ------- | ----- |
@@ -98,7 +98,7 @@ Now let's add the API.
 
 {%change%} Add this below the `Table` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create the HTTP API
 const api = new Api(stack, "Api", {
   defaults: {
@@ -118,17 +118,17 @@ stack.addOutputs({
 });
 ```
 
-We are using the SST [`Api`]({{ site.docs_url }}/constructs/Api) construct to create our API. It simply has one endpoint (the root). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/lambda.ts` will get invoked.
+We are using the SST [`Api`]({{ site.v2_url }}/constructs/Api) construct to create our API. It simply has one endpoint (the root). When we make a `POST` request to this endpoint the Lambda function called `main` in `packages/functions/src/lambda.ts` will get invoked.
 
 We'll also bind our table to our API. It allows our API to access (read and write) the table we just created.
 
 ### Setting up our Gatsby app
 
-To deploy a Gatsby app to AWS, we'll be using the SST [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite#creating-a-gatsby-site) construct.
+To deploy a Gatsby app to AWS, we'll be using the SST [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite#creating-a-gatsby-site) construct.
 
 {%change%} Replace the following in `stacks/ExampleStack.ts`:
 
-```ts
+```typescript
 // Show the API endpoint in the output
 stack.addOutputs({
   ApiEndpoint: api.url,
@@ -137,7 +137,7 @@ stack.addOutputs({
 
 {%change%} With:
 
-```ts
+```typescript
 const site = new StaticSite(stack, "GatsbySite", {
   path: "frontend",
   buildOutput: "public",
@@ -158,11 +158,11 @@ stack.addOutputs({
 
 The construct is pointing to where our Gatsby app is located. We haven't created our app yet but for now we'll point to the `frontend` directory.
 
-We are also setting up a [build time Gatsby environment variable](https://www.gatsbyjs.com/docs/how-to/local-development/environment-variables/) `GATSBY_APP_API_URL` with the endpoint of our API. The [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite#creating-a-gatsby-site) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
+We are also setting up a [build time Gatsby environment variable](https://www.gatsbyjs.com/docs/how-to/local-development/environment-variables/) `GATSBY_APP_API_URL` with the endpoint of our API. The [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite#creating-a-gatsby-site) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
 
 You can also optionally configure a custom domain.
 
-```ts
+```typescript
 // Deploy our Gatsby app
 const site = new StaticSite(stack, "GatsbySite", {
   // ...
@@ -178,7 +178,7 @@ Our API is powered by a Lambda function. In the function we'll read from our Dyn
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 
@@ -218,7 +218,7 @@ And let's test what we have so far.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -248,11 +248,11 @@ Stack dev-gatsby-app-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **API** tab and click **Send** button to send a `POST` request.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, The [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 ![API explorer invocation response](/assets/examples/angular-app/api-explorer-invocation-response.png)
 
@@ -357,7 +357,7 @@ Let's update our table with the clicks.
 
 {%change%} Add this above the `return` statement in `packages/functions/src/lambda.ts`.
 
-```ts
+```typescript
 const putParams = {
   TableName: Table.Counter.tableName,
   Key: {
@@ -381,7 +381,7 @@ And if you head over to your browser and click the button again, you should see 
 
 Also let's go to the **DynamoDB** tab in the SST Console and check that the value has been updated in the table.
 
-Note, The [DynamoDB explorer]({{ site.docs_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.docs_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
+Note, The [DynamoDB explorer]({{ site.v2_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.v2_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
 
 ![DynamoDB table view of counter table](/assets/examples/angular-app/dynamo-table-view-of-counter-table.png)
 

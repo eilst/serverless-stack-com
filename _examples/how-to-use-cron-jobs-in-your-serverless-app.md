@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ Let's start by creating a cron job.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Cron, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -75,7 +75,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-This creates a serverless cron job using [`Cron`]({{ site.docs_url }}/constructs/Cron). We've configured the cron job to run every minute.
+This creates a serverless cron job using [`Cron`]({{ site.v2_url }}/constructs/Cron). We've configured the cron job to run every minute.
 
 ## Adding function code
 
@@ -83,7 +83,7 @@ Now in our function, we'll print out a message every time the function is run.
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 export async function main() {
   console.log("Hi!");
   return {};
@@ -94,7 +94,7 @@ And let's test what we have so far.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -122,7 +122,7 @@ Stack dev-cron-job-ExampleStack
 
 Let's test our cron job using the integrated [SST Console](https://console.sst.dev).
 
-Note, the SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.docs_url }}/console).
+Note, the SST Console is a web based dashboard to manage your SST apps [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **Local** tab in the console.
 
@@ -144,7 +144,7 @@ $ npm install node-fetch
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 import fetch from "node-fetch";
 
 export async function main() {

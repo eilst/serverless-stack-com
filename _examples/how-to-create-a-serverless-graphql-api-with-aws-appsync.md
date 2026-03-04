@@ -13,9 +13,9 @@ ref: how-to-create-a-serverless-graphql-api-with-aws-appsync
 comments_id: how-to-create-a-serverless-graphql-api-with-aws-appsync/2362
 ---
 
-In this example we'll look at how to create an [AppSync GraphQL API]({% link _chapters/what-is-aws-appsync.md %}) on AWS using [SST]({{ site.sst_github_repo }}). We'll be allowing our users to get, create, update, delete, and list notes.
+In this example we'll look at how to create an [AppSync GraphQL API]({% link _archives/what-is-aws-appsync.md %}) on AWS using [SST]({{ site.sst_github_repo }}). We'll be allowing our users to get, create, update, delete, and list notes.
 
-We'll be using SST's [Live Lambda Development]({{ site.docs_url }}/live-lambda-development). It allows you to make changes and test AppSync locally without having to redeploy.
+We'll be using SST's [Live Lambda Development]({{ site.v2_url }}/live-lambda-development). It allows you to make changes and test AppSync locally without having to redeploy.
 
 Here is a video of it in action.
 
@@ -60,7 +60,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -72,7 +72,7 @@ Let's start by defining our AppSync API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { StackContext, Table, AppSyncApi } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -114,7 +114,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-We are creating an AppSync GraphQL API here using the [`AppSyncApi`]({{ site.docs_url }}/constructs/AppSyncApi) construct. We are also creating a DynamoDB table using the [`Table`]({{ site.docs_url }}/constructs/Table) construct. It'll store the notes we'll be creating with our GraphQL API.
+We are creating an AppSync GraphQL API here using the [`AppSyncApi`]({{ site.v2_url }}/constructs/AppSyncApi) construct. We are also creating a DynamoDB table using the [`Table`]({{ site.v2_url }}/constructs/Table) construct. It'll store the notes we'll be creating with our GraphQL API.
 
 Finally, we bind our table to our API.
 
@@ -154,7 +154,7 @@ Let's also add a type for our note object.
 
 {%change%} Add the following to a new file in `packages/functions/src/graphql/Note.ts`.
 
-```ts
+```typescript
 type Note = {
   id: string;
   content: string;
@@ -169,7 +169,7 @@ To start with, let's create the Lambda function that'll be our AppSync data sour
 
 {%change%} Replace `packages/functions/src/main.ts` with the following.
 
-```ts
+```typescript
 import Note from "./graphql/Note";
 import listNotes from "./graphql/listNotes";
 import createNote from "./graphql/createNote";
@@ -215,7 +215,7 @@ Starting with the one that'll create a note.
 
 {%change%} Add a file to `packages/functions/src/graphql/createNote.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 import Note from "./Note";
@@ -248,7 +248,7 @@ Next, let's write the function that'll fetch all our notes.
 
 {%change%} Add the following to `packages/functions/src/graphql/listNotes.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 
@@ -275,7 +275,7 @@ We'll do something similar for the function that gets a single note.
 
 {%change%} Create a `packages/functions/src/graphql/getNoteById.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 import Note from "./Note";
@@ -304,7 +304,7 @@ Now let's update our notes.
 
 {%change%} Add a `packages/functions/src/graphql/updateNote.ts` with:
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 import Note from "./Note";
@@ -334,7 +334,7 @@ To complete all the operations, let's delete the note.
 
 {%change%} Add this to `packages/functions/src/graphql/deleteNote.ts`.
 
-```ts
+```typescript
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
 
@@ -358,7 +358,7 @@ Let's test what we've created so far!
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -390,7 +390,7 @@ Stack dev-graphql-appsync-ExampleStack
 
 The `ApiId` is the Id of the AppSync API we just created, the `ApiKey` is the API key of our AppSync API and `ApiUrl` is the AppSync API URL.
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **GraphQL** tab and you should see the GraphQL Playground in action.
 
@@ -411,7 +411,7 @@ mutation createNote {
 
 Also let's go to the **DynamoDB** tab in the SST Console and check that the value has been created in the table.
 
-Note, The [DynamoDB explorer]({{ site.docs_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.docs_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
+Note, The [DynamoDB explorer]({{ site.v2_url }}/console#dynamodb) allows you to query the DynamoDB tables in the [`Table`]({{ site.v2_url }}/constructs/Table) constructs in your app. You can scan the table, query specific keys, create and edit items.
 
 ![DynamoDB explorer create note](/assets/examples/graphql-appsync/dynamodb-explorer-create-note.png)
 
@@ -470,7 +470,7 @@ You'll notice a couple of things. Firstly, the note we created is still there. T
 
 {%change%} Let's fix our `packages/functions/src/graphql/deleteNote.ts` by un-commenting the query.
 
-```ts
+```typescript
 await dynamoDb.delete(params).promise();
 ```
 

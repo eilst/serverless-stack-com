@@ -108,7 +108,7 @@ While this process works, it requires you to wait to see your results. Making fo
 
 ## SST
 
-In contrast, [SST]({{ site.sst_github_repo }}) was launched in early 2021 and has since grown rapidly to become the new way to build full-stack serverless applications. It uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}) to define your infrastructure. You define your stacks using real programming languages like JavaScript or TypeScript.
+In contrast, [SST]({{ site.sst_github_repo }}) was launched in early 2021 and has since grown rapidly to become the new way to build full-stack serverless applications. It uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}) to define your infrastructure. You define your stacks using real programming languages like JavaScript or TypeScript.
 
 ```js
 export function MyStack({ stack }) {
@@ -130,7 +130,7 @@ The CDK code here gets compiled down to CloudFormation templates, similar to the
 
 ### Developing Locally in SST
 
-SST was initially developed to solved the local development problem with serverless. It features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment. It allows you test your serverless apps live.
+SST was initially developed to solved the local development problem with serverless. It features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment. It allows you test your serverless apps live.
 
 It does this by deploying your application to AWS and proxying any Lambda function requests to your local machine. It'll then execute these locally and send the response back to AWS. This means that you don't need to mock anything and you can test against your deployed infrastructure.
 
@@ -150,9 +150,9 @@ Let's quickly summarize the comparison between the two frameworks.
 | ------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | Founded                   | 2015                                                                            | 2021                                                           |
 | Architecture              | Partly open source with hosted deployment engine                                | Completely open source and self-hosted                         |
-| Infrastructure Definition | [CloudFormation](https://aws.amazon.com/cloudformation/resources/templates/)    | [CDK]({% link _chapters/what-is-aws-cdk.md %})                 |
+| Infrastructure Definition | [CloudFormation](https://aws.amazon.com/cloudformation/resources/templates/)    | [CDK]({% link _archives/what-is-aws-cdk.md %})                 |
 |                           | Hard to manage large applications                                               | Easy to reuse infrastructure code                              |
-| Local Development         | Mocking or [serverless-offline](https://github.com/dherault/serverless-offline) | [Live Lambda Dev]({{ site.docs_url }}/live-lambda-development) |
+| Local Development         | Mocking or [serverless-offline](https://github.com/dherault/serverless-offline) | [Live Lambda Dev]({{ site.v2_url }}/live-lambda-development) |
 |                           | Repeatedly deploying changes                                                    | Setting breakpoints                                            |
 | Flexibility               | Use community plugins                                                           | Use any CDK construct                                          |
 |                           | Create your own plugin                                                          | Write your own CDK construct                                   |
@@ -172,7 +172,7 @@ This example comes with a VS Code [Launch Configuration](https://code.visualstud
 
 We are creating a simple API in our app. It's defined in `stacks/MyStack.ts`.
 
-```ts
+```typescript
 import { Api, StackContext } from "@serverless-stack/resources";
 
 export function MyStack({ stack }: StackContext) {
@@ -192,7 +192,7 @@ export function MyStack({ stack }: StackContext) {
 
 And when we hit this endpoint, it triggers our _Hello World_ Lambda function in `functions/lambda.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (
@@ -255,9 +255,9 @@ Here is a video of it in action.
   <iframe width="560" height="315" src="https://www.youtube.com/embed/2w4A06IsBlU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 
-And that's it! You can now add other parts of your infrastructure with [SST's constructs]({{ site.docs_url }}), CDK's constructs, or by adding your own.
+And that's it! You can now add other parts of your infrastructure with [SST's constructs]({{ site.v2_url }}), CDK's constructs, or by adding your own.
 
-As a next step, you can check out this free 1000 page ebook on how to build full-stack serverless applications using SST and React. It's the most widely read resource for serverless and a great way to get started.
+As a next step, you can check out this free 300 page ebook on how to build full-stack serverless applications using SST and React. It's the most widely read resource for serverless and a great way to get started.
 
 <div class="extras">
   <div class="container">
@@ -273,4 +273,4 @@ Finally, you can remove the resources created in this example using the followin
 $ npx sst remove
 ```
 
-You can also [check out the source for this example]({{ site.sst_github_repo }}{{ site.sst_github_examples_prefix }}vscode) and read about [Live Lambda Development]({{ site.docs_url }}/live-lambda-development).
+You can also [check out the source for this example]({{ site.sst_github_repo }}{{ site.sst_github_examples_prefix }}vscode) and read about [Live Lambda Development]({{ site.v2_url }}/live-lambda-development).

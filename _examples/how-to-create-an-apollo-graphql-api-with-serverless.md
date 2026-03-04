@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ Let's start by setting up our GraphQL API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { GraphQLApi, StackContext } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -85,7 +85,7 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-We are creating an Apollo GraphQL API here using the [`GraphQLApi`]({{ site.docs_url }}/constructs/GraphQLApi) construct. Our Apollo Server is powered by the Lambda function in `packages/functions/src/lambda.ts`.
+We are creating an Apollo GraphQL API here using the [`GraphQLApi`]({{ site.v2_url }}/constructs/GraphQLApi) construct. Our Apollo Server is powered by the Lambda function in `packages/functions/src/lambda.ts`.
 
 ## Adding function code
 
@@ -93,7 +93,7 @@ For this example, we are not using a database. We'll look at that in detail in a
 
 {%change%} Let's add a file that contains our notes in `packages/functions/src/lambda.ts`.
 
-```ts
+```typescript
 import { gql, ApolloServer } from "apollo-server-lambda";
 
 const typeDefs = gql`
@@ -137,7 +137,7 @@ Now let's test our new Apollo GraphQL API.
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -167,7 +167,7 @@ Stack dev-graphql-apollo-ExampleStack
 
 The `ApiEndpoint` is the API we just created.
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **GraphQL** tab and you should see the GraphQL Playground in action.
 
@@ -190,7 +190,7 @@ Let's make a quick change to our API.
 
 {%change%} In `packages/functions/src/lambda.ts` replace `Hello, World!` with `Hello, New World!`.
 
-```ts
+```typescript
 const resolvers = {
   Query: {
     hello: () => "Hello, New World!",

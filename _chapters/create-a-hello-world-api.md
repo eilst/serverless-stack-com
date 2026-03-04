@@ -3,89 +3,119 @@ layout: post
 title: Create a Hello World API
 date: 2021-08-17 00:00:00
 lang: en
-description: In this chapter we'll be creating a simple Hello World API using SST. We'll be deploying it using the Live Lambda development environment.
+description: In this chapter we'll be creating a simple Hello World API using SST.
 ref: create-a-hello-world-api
 comments_id: create-a-hello-world-api/2460
 ---
 
-With our newly created [SST]({{ site.sst_github_repo }}) app, we are ready to deploy a simple _Hello World_ API.
+With our newly created SST app, we are ready to deploy a simple _Hello World_ API. Let's rename some of the files from our template.
 
-In `stacks/MyStack.ts` you'll notice a API definition similar to this.
+### Rename the Template
+
+{%change%} Replace our `infra/api.ts` with the following.
 
 ```ts
-import { StackContext, Api } from "sst/constructs";
+import { bucket } from "./storage";
 
-export function API({ stack }: StackContext) {
-  const api = new Api(stack, "api", {
-    routes: {
-      "GET /": "packages/functions/src/lambda.handler",
-    },
-  });
-  stack.addOutputs({
-    ApiEndpoint: api.url,
-  });
-}
+export const api = new sst.aws.ApiGatewayV2("Api");
+
+api.route("GET /", {
+  link: [bucket],
+  handler: "packages/functions/src/api.handler",
+});
 ```
 
-Here we are creating a simple API with one route, `GET /`. When this API is invoked, the function called `handler` in `packages/functions/src/lambda.ts` will be executed.
+Here we are creating a simple API with one route, `GET /`. When this API is invoked, the function called `handler` in `packages/functions/src/api.ts` will be executed.
 
-Note that by default SST sets you up with a TypeScript project. While we are using JavaScript in this guide, the advantage with this setup is that you can incrementally adopt TypeScript.
+We are also _linking_ an S3 Bucket to our API. This allows the functions in our API to access the bucket. We'll be using this bucket later to handle file uploads. For now let's quickly rename it.
+
+{%change%} Replace our `infra/storage.ts` with.
+
+```ts
+// Create an S3 bucket
+export const bucket = new sst.aws.Bucket("Uploads");
+```
+
+Also let's rename how this bucket is accessed in our app code. We'll go into detail about this in the coming chapters.
+
+{%change%} Rename `Resource.MyBucket.name` line in `packages/functions/src/api.ts`.
+
+```ts
+body: `${Example.hello()} Linked to ${Resource.Uploads.name}.`,
+```
+
+Given that we've renamed a few components, let's also make the change in our config.
+
+{%change%} Replace the `run` function in `sst.config.ts`.
+
+```ts
+async run() {
+  await import("./infra/storage");
+  await import("./infra/api");
+},
+```
+
+{%note%}
+By default SST sets you up with a TypeScript project. While the infrastructure is in TypeScript, you are free to use regular JavaScript in your application code.
+{%endnote%}
 
 Let's go ahead and deploy this.
 
-## Starting your dev environment
+### Start Your Dev Environment
 
-We'll do this by starting up our local development environment.
+We'll do this by starting up our local development environment. SST's dev environment runs your functions [Live]({{ site.sst_url }}/docs/live){:target="_blank"}. It allows you to work on your serverless apps live.
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} Start your dev environment.
 
 ```bash
 $ npx sst dev
 ```
 
-The first time you run this command it'll ask you for the name of a stage. A stage or an environment is just a string that SST uses to namespace your deployments.
+Running `sst dev` will take a minute or two to deploy your app and bootstrap your account for SST.
 
 ```txt
-Please enter a name you’d like to use for your personal stage. Or hit enter to use jayair: Jay
+SST 0.1.17  ready!
+
+➜  App:        notes
+   Stage:      jayair
+   Console:    https://console.sst.dev/local/notes/jayair
+
+   ...
+
++  Complete
+   Api: https://5bv7x0iuga.execute-api.us-east-1.amazonaws.com
 ```
 
-For your local deployment it's recommended you pick something unique to you. Like your username.
-
-Running `sst dev` will take a couple of minutes to deploy your app and bootstrap your account for SST.
-
-```txt
-SST v2.1.14  ready!
-
-→  App:     notes
-   Stage:   Jay
-
-✓  Deployed:
-   API
-   ApiEndpoint: https://guksgkkr4l.execute-api.us-east-1.amazonaws.com
-```
-
-The `ApiEndpoint` is the API we just created. Let's test our endpoint. If you open the endpoint URL in your browser, you should see _Hello World!_ being printed out.
+The `Api` is the API we just created. Let's test our endpoint. If you open the endpoint URL in your browser, you should see _Hello World!_ being printed out.
 
 ![Serverless Hello World API invoked](/assets/part2/sst-hello-world-api-invoked.png)
 
-You can also head over to the **SST Console** link in your browser — [**old.console.sst.dev**]({{ site.old_console_url }}). The [SST Console]({{ site.docs_url }}/console) is a web based dashboard to manage your SST apps.
+You'll notice its also printing out the name of the bucket that it's linked to.
 
-![SST Console Local tab](/assets/part2/sst-console-local-tab.png)
-
-Note that, there's a newer version of the [SST Console]({{ site.console_url }}). We'll be updating the guide to use this soon. But for now let's use the older version.
-
-The **Local** tab shows you real-time logs from your apps. Here when you hit this endpoint the Lambda function is being run _locally_.
-
-## Deploying to prod
+### Deploying to Prod
 
 To deploy our API to prod, we'll need to stop our local development environment and run the following.
 
 ```bash
-$ npx sst deploy --stage prod
+$ npx sst deploy --stage production
 ```
 
 We don't have to do this right now. We'll be doing it later once we are done working on our app.
 
-The idea here is that we are able to work on separate environments. So when we are working in our personal environment (`Jay`), it doesn't break the API for our users in `prod`. The environment (or stage) names in this case are just strings and have no special significance. We could've called them `development` and `production` instead. We are however creating completely new serverless apps when we deploy to a different environment. This is another advantage of the serverless architecture. The infrastructure as code idea means that it's easy to replicate to new environments. And the pay per use model means that we are not charged for these new environments unless we actually use them.
+The idea here is that we are able to work on separate environments. So when we are working in our personal stage (`jayair`), it doesn't break the API for our users in `production`. The environment (or stage) names in this case are just strings and have no special significance. We could've called them `development` and `prod` instead.
 
-Now we are ready to create the backend for our notes app. But before that, let’s create a GitHub repo to store our code.
+We are however creating completely new apps when we deploy to a different environment. This is another advantage of the SST workflow. The infrastructure as code idea makes it easy to replicate to new environments. And the pay per use model of serverless means that we are not charged for these new environments unless we actually use them.
+
+### Commit the Changes
+
+As we work through the guide we'll save our changes.
+
+{%change%} Commit what we have and push our changes to GitHub.
+
+```bash
+$ git add .
+$ git commit -m "Initial commit"
+$ git push
+```
+
+Now we are ready to create the backend for our notes app.

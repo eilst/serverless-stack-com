@@ -15,7 +15,7 @@ comments_id: how-to-use-lambda-layers-in-your-serverless-app/2405
 
 In this example we will look at how to use [Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) in your serverless app with [SST]({{ site.sst_github_repo }}). We'll be using the [@sparticuz/chromium](https://github.com/Sparticuz/chromium) Layer to take a screenshot of a webpage and return the image in our API.
 
-We'll be using SST's [Live Lambda Development]({{ site.docs_url }}/live-lambda-development). It allows you to make changes and test locally without having to redeploy.
+We'll be using SST's [Live Lambda Development]({{ site.v2_url }}/live-lambda-development). It allows you to make changes and test locally without having to redeploy.
 
 ## Requirements
 
@@ -55,15 +55,16 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
    The code that's run when your API is invoked is placed in the `packages/functions/` directory of your project.
 
-3. `layers` - Lambda Layers
+3. `layers/` — Lambda Layers
 
-   The code that's run when your API is invoked is placed in the `packages/functions/` directory of your project.
+   The Lambda layer that contains Chromium.
+
 ## Creating the API
 
 Let's start by creating our API.
@@ -89,6 +90,8 @@ export function ExampleStack({ stack }: StackContext) {
           runtime: "nodejs18.x",
           // Increase the timeout for generating screenshots
           timeout: 15,
+          // Increase the memory
+          memorySize: "2 GB",
           // Load Chrome in a Layer
           layers: [layerChromium],
           // Exclude bundling it in the Lambda function
@@ -109,19 +112,37 @@ export function ExampleStack({ stack }: StackContext) {
 }
 ```
 
-Here, we will download the Layer from the [Sparticuz/chromium](https://github.com/Sparticuz/chromium/releases/tag/v114.0.0) GitHub release. Create folder `layers/chromium` in the root of the project and unzip the file layer then you will have `layers/chromium/nodejs`. The `nodejs` folder contains the `node_modules` folder and the `package.json` file.
+We then use the [`Api`]({{ site.v2_url }}/constructs/Api) construct and add a single route (`GET /`). For the function that'll be handling the route, we increase the timeout, since generating a screenshot can take a little bit of time.
 
-We then use the [`Api`]({{ site.docs_url }}/constructs/Api) construct and add a single route (`GET /`). For the function that'll be handling the route, we increase the timeout, since generating a screenshot can take a little bit of time. We then reference the Layer we want and exclude the Lambda function from bundling the [@sparticuz/chromium](https://github.com/Sparticuz/chromium) npm package.
+We create a layer based on what's in the `layers/chromium` directory, we'll download this below. We also exclude the Lambda function from bundling the [@sparticuz/chromium](https://github.com/Sparticuz/chromium) npm package.
 
 Finally, we output the endpoint of our newly created API.
 
-## Adding function code
+## Install Chromium
 
-Download chromium locally, then you will have YOUR_LOCAL_CHROMIUM_PATH. You will need it in lambda function to run chromium.
+We need to install Chromium so we can run it locally and we need to install it so we can package it up as a Lambda layer.
+
+### Installing locally
+
+{%change%} Download Chromium locally, then you will have `YOUR_LOCAL_CHROMIUM_PATH`. You will need it in Lambda function to run Chromium locally.
   
 ```bash
 $ npx @puppeteer/browsers install chromium@latest --path /tmp/localChromium
 ```
+
+### Download Layer
+
+{%change%} Create a `layers/chromium` directory.
+
+```bash
+$ mkdir -p layers/chromium
+```
+
+{%change%} Download the asset that looks like `chromium-v121.0.0-layer.zip` from the [@sparticuz/chromium](https://github.com/Sparticuz/chromium/releases/) GitHub releases.
+
+{%change%} Unzip and copy the `node_modules/` directory to the `layers/chromium/` directory.
+
+## Adding function code
 
 Now in our function, we'll be handling taking a screenshot of a given webpage.
 
@@ -190,18 +211,17 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
 First, we grab the webpage URL and dimensions for the screenshot from the query string. We then launch the browser and navigate to that URL, with those dimensions and take the screenshot.
 
-Now let's install the npm packages we need.
+Now let's install the npm packages we need. You need to check [Puppeteer's Chromium Support page](https://pptr.dev/chromium-support) and install the **correct version of Chromium**. At the moment writing this tutorial, `puppeteer-core@20` is compatible with `Chromium@113` is most stable.
 
 {%change%} Run the below command in the `packages/functions/` folder.
-Please check [Puppeteer's Chromium Support page](https://pptr.dev/chromium-support) and install the correct version of Chromium. At the moment writing this tutorial, puppeteer-core@20 is compatible with Chromium@113 is most stable.
 
 ```bash
-$ npm install puppeteer-core^20.1.2 @sparticuz/chromium^113.0.1
+$ npm install puppeteer-core@20.1.2 @sparticuz/chromium@113.0.1
 ```
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -243,7 +263,7 @@ Now let's make a change to our function so that we return the screenshot directl
 
 {%change%} Replace the following lines in `packages/functions/src/lambda.ts`.
 
-```ts
+```typescript
 // Take the screenshot
 await page.screenshot();
 
@@ -256,7 +276,7 @@ return {
 
 with:
 
-```ts
+```typescript
 // Take the screenshot
 const screenshot = (await page.screenshot({ encoding: "base64" })) as string;
 

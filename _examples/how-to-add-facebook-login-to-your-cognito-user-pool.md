@@ -53,7 +53,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -61,11 +61,11 @@ An SST app is made up of two parts.
 
 ## Setting up the Cognito
 
-First, let's create a [Cognito User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) to store the user info using the [`Cognito`]({{ site.docs_url }}/constructs/Cognito) construct
+First, let's create a [Cognito User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) to store the user info using the [`Cognito`]({{ site.v2_url }}/constructs/Cognito) construct
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import { Api, Cognito, StackContext, StaticSite } from "sst/constructs";
 
@@ -119,7 +119,7 @@ On the left navigation bar, choose Settings and then **Basic**.
 
 {%change%} Create a `.env.local` file in the root and add your Facebook `App ID` and `App secret`.
 
-```ts
+```typescript
 FACEBOOK_APP_ID=<YOUR_FACEBOOK_APP_ID>
 FACEBOOK_APP_SECRET=<YOUR_FACEBOOK_APP_SECRET>
 ```
@@ -128,7 +128,7 @@ FACEBOOK_APP_SECRET=<YOUR_FACEBOOK_APP_SECRET>
 
 {%change%} Add this below the `Cognito` definition in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Throw error if App ID & secret are not provided
 if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET)
   throw new Error("Please set FACEBOOK_APP_ID and FACEBOOK_APP_SECRET");
@@ -158,7 +158,7 @@ Now let's associate a Cognito domain to the user pool, which can be used for sig
 
 {%change%} Add below code in `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 // Create a cognito userpool domain
 const domain = auth.cdk.userPool.addDomain("AuthDomain", {
   cognitoDomain: {
@@ -173,7 +173,7 @@ Note, the `domainPrefix` need to be globally unique across all AWS accounts in a
 
 {%change%} Replace the `Api` definition with the following in `stacks/ExampleStacks.ts`.
 
-```ts
+```typescript
 // Create a HTTP API
 const api = new Api(stack, "Api", {
   authorizers: {
@@ -201,7 +201,7 @@ const api = new Api(stack, "Api", {
 auth.attachPermissionsForAuthUsers(stack, [api]);
 ```
 
-We are creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding two routes to it.
+We are creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding two routes to it.
 
 ```
 GET /private
@@ -216,7 +216,7 @@ Let's create two functions, one handling the public route, and the other for the
 
 {%change%} Add a `packages/functions/src/public.ts`.
 
-```ts
+```typescript
 export async function handler() {
   return {
     statusCode: 200,
@@ -227,7 +227,7 @@ export async function handler() {
 
 {%change%} Add a `packages/functions/src/private.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
@@ -242,11 +242,11 @@ export const handler: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
 ## Setting up our React app
 
-To deploy a React app to AWS, we'll be using the SST [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) construct.
+To deploy a React app to AWS, we'll be using the SST [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) construct.
 
 {%change%} Replace the `stack.addOutputs({` call with the following.
 
-```ts
+```typescript
 // Create a React Static Site
 const site = new StaticSite(stack, "Site", {
   path: "packages/frontend",
@@ -273,7 +273,7 @@ stack.addOutputs({
 
 The construct is pointing to where our React.js app is located. We haven't created our app yet but for now, we'll point to the `packages/frontend` directory.
 
-We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
+We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
 
 We are going to print out the resources that we created for reference.
 
@@ -305,7 +305,7 @@ We also need to load the environment variables from our SST app. To do this, we'
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -360,11 +360,11 @@ Type your redirect URL into **Valid OAuth Redirect URIs**. It will consist of yo
 
 The `api_url` is the API we just created. While the `site_url` is where our React app will be hosted. For now, it's just a placeholder website.
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **API** tab and click **Send** button of the `GET /public` to send a `GET` request.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, The [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 ![API explorer invocation response](/assets/examples/api-oauth-google/api-explorer-invocation-response.png)
 
@@ -646,7 +646,7 @@ Stack prod-api-oauth-facebook-ExampleStack
 
 Note, if you get any error like `'request' is not exported by __vite-browser-external, imported by node_modules/@aws-sdk/credential-provider-imds/dist/es/remoteProvider/httpRequest.js` replace `vite.config.js` with below code.
 
-```ts
+```typescript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 

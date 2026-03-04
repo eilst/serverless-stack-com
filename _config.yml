@@ -13,19 +13,30 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: SST
+title: SST Guide
 email: hello@sst.dev
 jobs_email: jobs@sst.dev
 description: > # this means to ignore newlines until "baseurl:"
-  Build modern full-stack applications on AWS.
+  Learn how to build modern full-stack apps on AWS.
 description_full: >
-  An open source framework for building modern full-stack applications on AWS.
+  The most widely read resource for building full-stack serverless apps on AWS.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://sst.dev" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://guide.sst.dev" # the base hostname & protocol for your site, e.g. http://example.com
+
+sst_url: "https://sst.dev"
+
+exclude:
+  - .idea
+  - LICENSE
+  - README.md
+  - package.json
+  - sst.config.ts
+  - pnpm-lock.yaml
+  - CONTRIBUTING.md
 
 demo_url: "https://demo.sst.dev"
 
-github_repo: "https://github.com/AnomalyInnovations/serverless-stack-com"
+github_repo: "https://github.com/sst/guide"
 github_edit_prefix: "/edit/master/"
 github_history_prefix: "/commits/master/"
 github_issues_prefix: "/issues/"
@@ -46,7 +57,7 @@ survey_url: "https://serverless-stack.typeform.com/to/xiPdCW"
 
 google_analytics: "UA-3536629-11"
 
-docs_url: "https://docs.sst.dev"
+v2_url: "https://v2.sst.dev"
 v1_conf_url: "https://v1conf.sst.dev"
 console_url: "https://console.sst.dev"
 old_console_url: "https://old.console.sst.dev"
@@ -54,26 +65,26 @@ forum_url: "https://discourse.sst.dev"
 forum_thread_prefix: "/t/"
 patreon_url: "https://www.patreon.com/serverless_stack"
 github_sponsor_url: "https://github.com/sponsors/jayair"
-twitter: "ServerlessStack"
-twitter_url: "https://twitter.com/sst_dev"
+twitter: "SST_dev"
+twitter_url: "https://twitter.com/SST_dev"
 slack_invite_url: "https://sst.dev/slack"
-discord_invite_url: "https://discord.gg/sst"
+discord_invite_url: "https://sst.dev/discord"
 linkedin_url: "https://www.linkedin.com/company/sst-dev"
 youtube_url: "https://www.youtube.com/c/sst-dev"
 
 social_cards_url: "https://social-cards.sst.dev"
 
-permalink: /blog/:title:output_ext
-
 stats:
   newsletter: "90,000"
   newsletter_short: "90k"
-  discord: "5500"
-  github: "17000"
-  github_short: "17k"
+  discord: "11k"
+  github: "21000"
+  github_short: "21k"
 
 collections:
   chapters:
+    output: true
+  archives:
     output: true
   examples:
     output: true
@@ -90,3 +101,9 @@ plugins:
 #      path: ""
 #    values:
 #      image: serverless-stack-lander/index.png
+
+
+# Disable redirects plugin from creating
+# redirects.json
+redirect_from:
+  json: false

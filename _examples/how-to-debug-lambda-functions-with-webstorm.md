@@ -15,7 +15,7 @@ comments_id: how-to-debug-lambda-functions-with-webstorm/2529
 
 In this example we will look at how to debug AWS Lambda functions with [WebStorm](https://www.jetbrains.com/webstorm/) using [SST]({{ site.sst_github_repo }}).
 
-SST allows you to build and test Lambda functions locally using [Live Lambda Development]({{ site.docs_url }}/live-lambda-development). This means that you can attach breakpoints and inspect your Lambda functions locally, even if they are invoked remotely.
+SST allows you to build and test Lambda functions locally using [Live Lambda Development]({{ site.v2_url }}/live-lambda-development). This means that you can attach breakpoints and inspect your Lambda functions locally, even if they are invoked remotely.
 
 Here is a video of it in action.
 
@@ -62,7 +62,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -74,7 +74,7 @@ For this example we'll be testing using a simple API endpoint.
 
 Our API is defined in the `stacks/ExampleStack.ts`.
 
-```ts
+```typescript
 import { StackContext, Api } from "sst/constructs";
 
 export function ExampleStack({ stack }: StackContext) {
@@ -98,7 +98,7 @@ Our functions are stored in the `packages/functions/` directory. In this case, w
 
 {%change%} Replace your `packages/functions/src/lambda.ts` with.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
@@ -129,7 +129,7 @@ In some versions of WebStorm you might need to disable stepping through library 
 
 Since we are going to set breakpoints in our Lambda functions, it makes sense to increase the timeouts.
 
-SST has an [`--increase-timeout`]({{ site.docs_url }}/packages/cli#options) option that increases the function timeouts in your app to the maximum 15 minutes.
+SST has an [`--increase-timeout`]({{ site.v2_url }}/packages/cli#options) option that increases the function timeouts in your app to the maximum 15 minutes.
 
 {%change%} Add `--increase-timeout` to the arguments to increase the timeout.
 
@@ -145,7 +145,7 @@ Click on **Debug** icon to start the debugging
 
 ![Set Lambda function breakpoint in WebStorm](/assets/examples/webstorm/set-lambda-function-breakpoint-in-webstorm.png)
 
-The first time you start the [Live Lambda Development environment]({{ site.docs_url }}/live-lambda-development), you will be prompted to enter a stage name to use locally. If you are working within a team, it is recommended that you use a stage that's specific to you. This ensures that you and your teammate can share an AWS account and still have standalone environments. [Read more about this over on our docs]({{ site.docs_url }}/working-with-your-team).
+The first time you start the [Live Lambda Development environment]({{ site.v2_url }}/live-lambda-development), you will be prompted to enter a stage name to use locally. If you are working within a team, it is recommended that you use a stage that's specific to you. This ensures that you and your teammate can share an AWS account and still have standalone environments. [Read more about this over on our docs]({{ site.v2_url }}/working-with-your-team).
 
 Note that the prompt will be shown under the **Process Console** tab.
 
@@ -190,7 +190,7 @@ An advantage of using the Live Lambda Development environment is that you can ma
 
 {%change%} Replace `packages/functions/src/lambda.ts` with the following.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {

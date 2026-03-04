@@ -52,7 +52,7 @@ An SST app is made up of two parts.
 
 1. `stacks/` — App Infrastructure
 
-   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _chapters/what-is-aws-cdk.md %}), to create the infrastructure.
+   The code that describes the infrastructure of your serverless app is placed in the `stacks/` directory of your project. SST uses [AWS CDK]({% link _archives/what-is-aws-cdk.md %}), to create the infrastructure.
 
 2. `packages/functions/` — App Code
 
@@ -64,7 +64,7 @@ Let's start by setting up an API.
 
 {%change%} Replace the `stacks/ExampleStack.ts` with the following.
 
-```ts
+```typescript
 import { Api, Cognito, StackContext, StaticSite } from "sst/constructs";
 
 export function ExampleStack({ stack, app }: StackContext) {
@@ -110,7 +110,7 @@ export function ExampleStack({ stack, app }: StackContext) {
 
 This creates a [Cognito User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html); a user directory that manages user sign up and login. We've configured the User Pool to allow users to login with their email and password.
 
-We are also creating an API here using the [`Api`]({{ site.docs_url }}/constructs/api) construct. And we are adding two routes to it.
+We are also creating an API here using the [`Api`]({{ site.v2_url }}/constructs/api) construct. And we are adding two routes to it.
 
 ```
 GET /private
@@ -125,7 +125,7 @@ Let's create two functions, one for the public route, and one for the private ro
 
 {%change%} Add a `packages/functions/src/public.ts`.
 
-```ts
+```typescript
 export async function main() {
   return {
     statusCode: 200,
@@ -136,7 +136,7 @@ export async function main() {
 
 {%change%} Add a `packages/functions/src/private.ts`.
 
-```ts
+```typescript
 import { APIGatewayProxyHandlerV2WithJWTAuthorizer } from "aws-lambda";
 
 export const main: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
@@ -151,11 +151,11 @@ export const main: APIGatewayProxyHandlerV2WithJWTAuthorizer = async (
 
 ## Setting up our React app
 
-To deploy a React.js app to AWS, we'll be using the SST [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) construct.
+To deploy a React.js app to AWS, we'll be using the SST [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) construct.
 
 {%change%} Replace the following in `stacks/ExampleStack.ts`:
 
-```ts
+```typescript
 // Show the API endpoint in the output
 stack.addOutputs({
   ApiEndpoint: api.url,
@@ -166,7 +166,7 @@ stack.addOutputs({
 
 {%change%} With:
 
-```ts
+```typescript
 const site = new StaticSite(stack, "Site", {
   path: "frontend",
   environment: {
@@ -188,13 +188,13 @@ stack.addOutputs({
 
 The construct is pointing to where our React.js app is located. We haven't created our app yet but for now we'll point to the `frontend` directory.
 
-We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.docs_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
+We are also setting up [build time React environment variables](https://vitejs.dev/guide/env-and-mode.html) with the endpoint of our API. The [`StaticSite`]({{ site.v2_url }}/constructs/StaticSite) allows us to set environment variables automatically from our backend, without having to hard code them in our frontend.
 
 We are going to print out the resources that we created for reference.
 
 Make sure to import the `StaticSite` construct by adding below line
 
-```ts
+```typescript
 import { StaticSite } from "sst/constructs";
 ```
 
@@ -226,7 +226,7 @@ We also need to load the environment variables from our SST app. To do this, we'
 
 ## Starting your dev environment
 
-{%change%} SST features a [Live Lambda Development]({{ site.docs_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
+{%change%} SST features a [Live Lambda Development]({{ site.v2_url }}/live-lambda-development) environment that allows you to work on your serverless apps live.
 
 ```bash
 $ npm run dev
@@ -264,11 +264,11 @@ Stack dev-api-auth-jwt-cognito-user-pool-ExampleStack
     SiteUrl: https://d3uxpgrgqdfnl5.cloudfront.net
 ```
 
-Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.docs_url }}/console).
+Let's test our endpoint with the [SST Console](https://console.sst.dev). The SST Console is a web based dashboard to manage your SST apps. [Learn more about it in our docs]({{ site.v2_url }}/console).
 
 Go to the **API** tab and click **Send** button of the `GET /public` to send a `GET` request.
 
-Note, The [API explorer]({{ site.docs_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
+Note, The [API explorer]({{ site.v2_url }}/console#api) lets you make HTTP requests to any of the routes in your `Api` construct. Set the headers, query params, request body, and view the function logs with the response.
 
 ![API explorer invocation response](/assets/examples/api-oauth-google/api-explorer-invocation-response.png)
 
@@ -659,7 +659,7 @@ A note on these environments. SST is simply deploying the same app twice using t
 
 Note, if you get any error like `'request' is not exported by __vite-browser-external, imported by node_modules/@aws-sdk/credential-provider-imds/dist/es/remoteProvider/httpRequest.js` replace `vite.config.js` with below code.
 
-```ts
+```typescript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 

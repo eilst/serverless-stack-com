@@ -15,7 +15,7 @@ Below are the updates we’ve made to SST, each with:
 
 - Each update has a link to an **archived version of the tutorial**
 - Updates to the tutorial **compared to the last version**
-- Updates to the **API and Client repos**
+- Updates to the **guide and demo repos**
 
 While the hosted version of the tutorial and the code snippets are accurate, the sample project repo that is linked at the bottom of each chapter is unfortunately not. We do however maintain the past versions of the completed sample project repo. So you should be able to use those to figure things out. All this info is also available on the [releases page]({{ site.github_repo }}/releases) of our [GitHub repo]({{ site.github_repo }}).
 
@@ -23,9 +23,36 @@ You can get these updates emailed to you via our [newsletter]({% link newsletter
 
 ### Changes
 
-#### [v7.4: {{ site.data.changelog.current.title }}](https://branchv74--serverless-stack.netlify.app/) (Current)
+#### [v9.0.1: {{ site.data.changelog.current.title }}](https://branchv901.archives.sst.dev/) (Current)
 
 {{ site.data.changelog.current.desc }}
+
+- [Tutorial changes]({{ site.github_repo }}/compare/v9.0...v9.0.1)
+- [Demo notes app source]({{ site.sst_demo_repo }}/compare/v9...v9.0.1)
+
+#### [v9.0: {{ site.data.changelog.v9-0.title }}](https://branchv90.archives.sst.dev/)
+
+{{ site.data.changelog.v9-0.desc }}
+
+- [Tutorial changes]({{ site.github_repo }}/compare/v8.0.1...v9.0)
+- [Demo notes app source]({{ site.sst_demo_repo }}/compare/v2.0...v9)
+
+#### [v8.0.1: {{ site.data.changelog.v8-0-1.title }}](https://branchv801.archives.sst.dev/)
+
+{{ site.data.changelog.v8-0-1.desc }}
+
+- [Tutorial changes]({{ site.github_repo }}/compare/v8.0...v8.0.1)
+
+#### [v8.0: {{ site.data.changelog.v8-0.title }}](https://branchv80.archives.sst.dev/)
+
+{{ site.data.changelog.v8-0.desc }}
+
+- [Tutorial changes]({{ site.github_repo }}/compare/v7.4...v8.0)
+- [Demo notes app source]({{ site.sst_demo_repo }}/compare/v1.4...v2.0)
+
+#### [v7.4: {{ site.data.changelog.v7-4.title }}](https://branchv74--serverless-stack.netlify.app/)
+
+{{ site.data.changelog.v7-4.desc }}
 
 - [Tutorial changes]({{ site.github_repo }}/compare/v7.3...v7.4)
 - [Demo notes app source]({{ site.sst_demo_repo }}/compare/v1.3...v1.4)
